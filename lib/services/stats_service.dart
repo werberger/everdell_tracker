@@ -11,6 +11,8 @@ class PlayerStats {
   final int highestScore;
   final Map<String, double> averageBreakdown;
   final Map<String, int> expansionCounts;
+  final Map<int, int> positionCounts;
+  final Map<int, int> positionWins;
 
   const PlayerStats({
     required this.playerName,
@@ -21,7 +23,16 @@ class PlayerStats {
     required this.highestScore,
     required this.averageBreakdown,
     required this.expansionCounts,
+    required this.positionCounts,
+    required this.positionWins,
   });
+
+  double getPositionWinRate(int position) {
+    final games = positionCounts[position] ?? 0;
+    if (games == 0) return 0.0;
+    final wins = positionWins[position] ?? 0;
+    return wins / games;
+  }
 }
 
 class StatsService {
@@ -85,6 +96,30 @@ class StatsService {
       }
     }
 
+    // Calculate position statistics
+    final positionCounts = <int, int>{};
+    final positionWins = <int, int>{};
+    
+    for (int i = 0; i < playerScores.length; i++) {
+      final score = playerScores[i];
+      final game = playerGames[i];
+      final position = score.playerOrder;
+      
+      if (position != null) {
+        positionCounts.update(position, (value) => value + 1, ifAbsent: () => 1);
+        
+        final isWinner = game.winnerIds.any((id) {
+          return game.players.any(
+            (player) => player.playerId == id && player.playerName == playerName,
+          );
+        });
+        
+        if (isWinner) {
+          positionWins.update(position, (value) => value + 1, ifAbsent: () => 1);
+        }
+      }
+    }
+
     return PlayerStats(
       playerName: playerName,
       gamesPlayed: gamesPlayed,
@@ -94,6 +129,8 @@ class StatsService {
       highestScore: highestScore,
       averageBreakdown: averages,
       expansionCounts: expansionCounts,
+      positionCounts: positionCounts,
+      positionWins: positionWins,
     );
   }
 

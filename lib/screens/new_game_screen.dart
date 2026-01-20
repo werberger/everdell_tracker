@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -28,7 +29,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
   final TextEditingController _notesController = TextEditingController();
   List<String> _winnerIds = [];
   String? _editingGameId;
-  DateTime? _editingDateTime;
+  DateTime _gameDateTime = DateTime.now();
 
   @override
   void initState() {
@@ -41,7 +42,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
   }
   void _loadExistingGame(Game game) {
     _editingGameId = game.id;
-    _editingDateTime = game.dateTime;
+    _gameDateTime = game.dateTime;
     _selectedExpansions
       ..clear()
       ..addAll(game.expansionsUsed);
@@ -224,7 +225,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
     final game = Game(
       id: _editingGameId ?? _uuid.v4(),
-      dateTime: _editingDateTime ?? DateTime.now(),
+      dateTime: _gameDateTime,
       expansionsUsed: List<Expansion>.from(_selectedExpansions),
       players: scores,
       notes: _notesController.text.trim().isEmpty
@@ -279,6 +280,44 @@ class _NewGameScreenState extends State<NewGameScreen> {
         false;
   }
 
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _gameDateTime,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _gameDateTime = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          _gameDateTime.hour,
+          _gameDateTime.minute,
+        );
+      });
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_gameDateTime),
+    );
+    if (picked != null) {
+      setState(() {
+        _gameDateTime = DateTime(
+          _gameDateTime.year,
+          _gameDateTime.month,
+          _gameDateTime.day,
+          picked.hour,
+          picked.minute,
+        );
+      });
+    }
+  }
+
   List<String> _winnerNames() {
     return _players
         .where((entry) => _winnerIds.contains(entry.id))
@@ -299,6 +338,31 @@ class _NewGameScreenState extends State<NewGameScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          const Text(
+            'Game Date & Time',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _selectDate,
+                  icon: const Icon(Icons.calendar_today),
+                  label: Text(DateFormat('MMM d, yyyy').format(_gameDateTime)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _selectTime,
+                  icon: const Icon(Icons.access_time),
+                  label: Text(DateFormat('h:mm a').format(_gameDateTime)),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           const Text(
             'Expansions',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -350,6 +414,8 @@ class _NewGameScreenState extends State<NewGameScreen> {
               weatherPointsController: entry.weatherPointsController,
               garlandPointsController: entry.garlandPointsController,
               ticketPointsController: entry.ticketPointsController,
+              playerOrderController: entry.playerOrderController,
+              startingCardsController: entry.startingCardsController,
               onRemove: () => _removePlayer(entry),
               onChanged: () => setState(() {}),
               calculatedTotal:
@@ -414,10 +480,20 @@ class _PlayerEntry {
   final TextEditingController weatherPointsController = TextEditingController();
   final TextEditingController garlandPointsController = TextEditingController();
   final TextEditingController ticketPointsController = TextEditingController();
+  final TextEditingController playerOrderController = TextEditingController();
+  final TextEditingController startingCardsController = TextEditingController();
 
   bool isQuickEntry = false;
 
   _PlayerEntry({required this.id});
+
+  static int calculateStartingCards(int playerOrder) {
+    // Everdell starting cards: 1st=5, 2nd=6, 3rd=7, 4th+=8
+    if (playerOrder == 1) return 5;
+    if (playerOrder == 2) return 6;
+    if (playerOrder == 3) return 7;
+    return 8;
+  }
 
   factory _PlayerEntry.fromScore(PlayerScore score) {
     final entry = _PlayerEntry(id: score.playerId)
@@ -443,6 +519,9 @@ class _PlayerEntry {
       entry.garlandPointsController.text = _toText(score.garlandPoints);
       entry.ticketPointsController.text = _toText(score.ticketPoints);
     }
+
+    entry.playerOrderController.text = _toText(score.playerOrder);
+    entry.startingCardsController.text = _toText(score.startingCards);
 
     return entry;
   }
@@ -507,6 +586,8 @@ class _PlayerEntry {
       tiebreakerResources: baseScore.tiebreakerResources,
       isWinner: isWinner,
       isQuickEntry: isQuickEntry,
+      playerOrder: _parse(playerOrderController),
+      startingCards: _parse(startingCardsController),
     );
   }
 
@@ -540,6 +621,8 @@ class _PlayerEntry {
     weatherPointsController.dispose();
     garlandPointsController.dispose();
     ticketPointsController.dispose();
+    playerOrderController.dispose();
+    startingCardsController.dispose();
   }
 
   static String _toText(int? value) => value == null ? '' : value.toString();

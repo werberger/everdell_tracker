@@ -38,13 +38,15 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       tiebreakerResources: fields[18] as int,
       isWinner: fields[19] as bool,
       isQuickEntry: fields[20] as bool,
+      playerOrder: fields[21] as int?,
+      startingCards: fields[22] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PlayerScore obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.playerId)
       ..writeByte(1)
@@ -86,7 +88,11 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       ..writeByte(19)
       ..write(obj.isWinner)
       ..writeByte(20)
-      ..write(obj.isQuickEntry);
+      ..write(obj.isQuickEntry)
+      ..writeByte(21)
+      ..write(obj.playerOrder)
+      ..writeByte(22)
+      ..write(obj.startingCards);
   }
 
   @override

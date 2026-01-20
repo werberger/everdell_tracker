@@ -78,6 +78,36 @@ class _StatsScreenState extends State<StatsScreen> {
     setState(() => _dateRange = range);
   }
 
+  List<Widget> _buildPositionStats(PlayerStats stats) {
+    final positions = stats.positionCounts.keys.toList()..sort();
+    return positions.map((position) {
+      final games = stats.positionCounts[position] ?? 0;
+      final wins = stats.positionWins[position] ?? 0;
+      final winRate = stats.getPositionWinRate(position);
+      final percentage = (games / stats.gamesPlayed * 100).toStringAsFixed(1);
+      
+      String positionLabel;
+      switch (position) {
+        case 1:
+          positionLabel = '1st';
+          break;
+        case 2:
+          positionLabel = '2nd';
+          break;
+        case 3:
+          positionLabel = '3rd';
+          break;
+        default:
+          positionLabel = '${position}th';
+      }
+      
+      return Text(
+        '$positionLabel: $games games ($percentage%) • '
+        '$wins wins (${(winRate * 100).toStringAsFixed(1)}% win rate)',
+      );
+    }).toList();
+  }
+
   Future<void> _showDetails(PlayerStats stats) async {
     final dateText = _dateRange == null
         ? 'All time'
@@ -125,6 +155,15 @@ class _StatsScreenState extends State<StatsScreen> {
                   ...stats.expansionCounts.entries.map(
                     (entry) => Text('${entry.key}: ${entry.value}'),
                   ),
+                ],
+                if (stats.positionCounts.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Player Position Statistics',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._buildPositionStats(stats),
                 ],
               ],
             ),

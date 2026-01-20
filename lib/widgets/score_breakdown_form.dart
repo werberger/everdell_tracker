@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../models/expansion.dart';
 
-class ScoreBreakdownForm extends StatelessWidget {
+class ScoreBreakdownForm extends StatefulWidget {
   final bool separatePointTokens;
   final bool autoConvertResources;
   final List<Expansion> expansions;
@@ -48,93 +48,132 @@ class ScoreBreakdownForm extends StatelessWidget {
   });
 
   @override
+  State<ScoreBreakdownForm> createState() => _ScoreBreakdownFormState();
+}
+
+class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
+  bool _showTiebreaker = false;
+
+  @override
   Widget build(BuildContext context) {
-    final totalResources = _parse(berriesController) +
-        _parse(resinController) +
-        _parse(pebblesController) +
-        _parse(woodController);
+    final totalResources = _parse(widget.berriesController) +
+        _parse(widget.resinController) +
+        _parse(widget.pebblesController) +
+        _parse(widget.woodController);
     final resourcePoints = totalResources ~/ 3;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (separatePointTokens)
+        if (widget.separatePointTokens)
           _numberField(
             label: 'Point Tokens',
-            controller: pointTokensController,
+            controller: widget.pointTokensController,
           ),
         _numberField(
           label: 'Construction & Critter Points',
-          controller: cardPointsController,
+          controller: widget.cardPointsController,
         ),
         _numberField(
           label: 'Basic Events (count)',
-          controller: basicEventsController,
+          controller: widget.basicEventsController,
         ),
         _numberField(
           label: 'Special Events (points)',
-          controller: specialEventsController,
+          controller: widget.specialEventsController,
         ),
         _numberField(
           label: 'Prosperity Points',
-          controller: prosperityPointsController,
+          controller: widget.prosperityPointsController,
         ),
         _numberField(
           label: 'Journey Points',
-          controller: journeyPointsController,
+          controller: widget.journeyPointsController,
         ),
         const SizedBox(height: 12),
-        const Text('Resources (tiebreaker)'),
-        _numberField(
-          label: 'Berries',
-          controller: berriesController,
-        ),
-        _numberField(
-          label: 'Resin',
-          controller: resinController,
-        ),
-        _numberField(
-          label: 'Pebbles',
-          controller: pebblesController,
-        ),
-        _numberField(
-          label: 'Wood',
-          controller: woodController,
-        ),
-        if (autoConvertResources)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              'Resources: $totalResources → $resourcePoints points',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+        InkWell(
+          onTap: () {
+            setState(() {
+              _showTiebreaker = !_showTiebreaker;
+            });
+          },
+          child: Row(
+            children: [
+              Icon(
+                _showTiebreaker ? Icons.expand_more : Icons.chevron_right,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Resources (tiebreaker)',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              if (!_showTiebreaker && totalResources > 0) ...[
+                const SizedBox(width: 8),
+                Text(
+                  '($totalResources)',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(fontStyle: FontStyle.italic),
+                ),
+              ],
+            ],
           ),
+        ),
+        if (_showTiebreaker) ...[
+          const SizedBox(height: 8),
+          _numberField(
+            label: 'Berries',
+            controller: widget.berriesController,
+          ),
+          _numberField(
+            label: 'Resin',
+            controller: widget.resinController,
+          ),
+          _numberField(
+            label: 'Pebbles',
+            controller: widget.pebblesController,
+          ),
+          _numberField(
+            label: 'Wood',
+            controller: widget.woodController,
+          ),
+          if (widget.autoConvertResources)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Resources: $totalResources → $resourcePoints points',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+        ],
         const SizedBox(height: 12),
-        if (expansions.contains(Expansion.pearlbrook))
+        if (widget.expansions.contains(Expansion.pearlbrook))
           _numberField(
             label: 'Pearlbrook Points',
-            controller: pearlPointsController,
+            controller: widget.pearlPointsController,
           ),
-        if (expansions.contains(Expansion.pearlbrook) ||
-            expansions.contains(Expansion.mistwood))
+        if (widget.expansions.contains(Expansion.pearlbrook) ||
+            widget.expansions.contains(Expansion.mistwood))
           _numberField(
             label: 'Wonder Points',
-            controller: wonderPointsController,
+            controller: widget.wonderPointsController,
           ),
-        if (expansions.contains(Expansion.spirecrest))
+        if (widget.expansions.contains(Expansion.spirecrest))
           _numberField(
             label: 'Weather Points',
-            controller: weatherPointsController,
+            controller: widget.weatherPointsController,
           ),
-        if (expansions.contains(Expansion.bellfaire))
+        if (widget.expansions.contains(Expansion.bellfaire))
           _numberField(
             label: 'Garland Points',
-            controller: garlandPointsController,
+            controller: widget.garlandPointsController,
           ),
-        if (expansions.contains(Expansion.mistwood))
+        if (widget.expansions.contains(Expansion.mistwood))
           _numberField(
             label: 'Ticket Points',
-            controller: ticketPointsController,
+            controller: widget.ticketPointsController,
           ),
       ],
     );
@@ -154,7 +193,7 @@ class ScoreBreakdownForm extends StatelessWidget {
           labelText: label,
           border: const OutlineInputBorder(),
         ),
-        onChanged: (_) => onChanged(),
+        onChanged: (_) => widget.onChanged(),
       ),
     );
   }

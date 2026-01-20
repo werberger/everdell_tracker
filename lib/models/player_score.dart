@@ -70,6 +70,12 @@ class PlayerScore extends HiveObject {
   @HiveField(20)
   final bool isQuickEntry;
 
+  @HiveField(21)
+  final int? playerOrder;
+
+  @HiveField(22)
+  final int? startingCards;
+
   PlayerScore({
     required this.playerId,
     required this.playerName,
@@ -92,5 +98,7 @@ class PlayerScore extends HiveObject {
     required this.tiebreakerResources,
     required this.isWinner,
     required this.isQuickEntry,
+    this.playerOrder,
+    this.startingCards,
   });
 }

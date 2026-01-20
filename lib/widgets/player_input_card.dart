@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../models/expansion.dart';
 import 'score_breakdown_form.dart';
 
-class PlayerInputCard extends StatelessWidget {
+class PlayerInputCard extends StatefulWidget {
   final int index;
   final TextEditingController nameController;
   final List<String> playerSuggestions;
@@ -29,6 +29,8 @@ class PlayerInputCard extends StatelessWidget {
   final TextEditingController weatherPointsController;
   final TextEditingController garlandPointsController;
   final TextEditingController ticketPointsController;
+  final TextEditingController playerOrderController;
+  final TextEditingController startingCardsController;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
   final int? calculatedTotal;
@@ -59,10 +61,35 @@ class PlayerInputCard extends StatelessWidget {
     required this.weatherPointsController,
     required this.garlandPointsController,
     required this.ticketPointsController,
+    required this.playerOrderController,
+    required this.startingCardsController,
     required this.onRemove,
     required this.onChanged,
     required this.calculatedTotal,
   });
+
+  @override
+  State<PlayerInputCard> createState() => _PlayerInputCardState();
+}
+
+class _PlayerInputCardState extends State<PlayerInputCard> {
+  bool _isExpanded = true;
+
+  void _updateStartingCards() {
+    final order = int.tryParse(widget.playerOrderController.text);
+    if (order != null && order >= 1) {
+      final cards = _calculateStartingCards(order);
+      widget.startingCardsController.text = cards.toString();
+      widget.onChanged();
+    }
+  }
+
+  int _calculateStartingCards(int playerOrder) {
+    if (playerOrder == 1) return 5;
+    if (playerOrder == 2) return 6;
+    if (playerOrder == 3) return 7;
+    return 8;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,100 +103,164 @@ class PlayerInputCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    'Player ${index + 1}',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isExpanded
+                              ? Icons.expand_more
+                              : Icons.chevron_right,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Player ${widget.index + 1}${widget.nameController.text.isEmpty ? '' : ' - ${widget.nameController.text}'}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        if (!_isExpanded && widget.calculatedTotal != null) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            '(${widget.calculatedTotal})',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
                 IconButton(
-                  onPressed: onRemove,
+                  onPressed: widget.onRemove,
                   icon: const Icon(Icons.delete_outline),
                 ),
               ],
             ),
-            Autocomplete<String>(
-              initialValue: TextEditingValue(text: nameController.text),
-              optionsBuilder: (value) {
-                if (value.text.trim().isEmpty) {
-                  return const Iterable<String>.empty();
-                }
-                final query = value.text.toLowerCase();
-                return playerSuggestions.where(
-                  (name) => name.toLowerCase().contains(query),
-                );
-              },
-              onSelected: (value) {
-                nameController.text = value;
-                onChanged();
-              },
-              fieldViewBuilder: (context, controller, focusNode, onSubmit) {
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
+            if (_isExpanded) ...[
+              const SizedBox(height: 8),
+              Autocomplete<String>(
+                initialValue:
+                    TextEditingValue(text: widget.nameController.text),
+                optionsBuilder: (value) {
+                  if (value.text.trim().isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  final query = value.text.toLowerCase();
+                  return widget.playerSuggestions.where(
+                    (name) => name.toLowerCase().contains(query),
+                  );
+                },
+                onSelected: (value) {
+                  widget.nameController.text = value;
+                  widget.onChanged();
+                },
+                fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                  return TextField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: const InputDecoration(
+                      labelText: 'Player Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    textInputAction: TextInputAction.next,
+                    onChanged: (value) {
+                      widget.nameController.text = value;
+                      widget.onChanged();
+                      setState(() {}); // Refresh to show name in collapsed header
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: widget.playerOrderController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(
+                        labelText: 'Player Order (1st, 2nd, etc.)',
+                        border: OutlineInputBorder(),
+                        hintText: '1-6',
+                      ),
+                      onChanged: (_) => _updateStartingCards(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: widget.startingCardsController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(
+                        labelText: 'Starting Cards',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => widget.onChanged(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Quick Total Entry'),
+                value: widget.isQuickEntry,
+                onChanged: widget.onQuickEntryChanged,
+              ),
+              const SizedBox(height: 8),
+              if (widget.isQuickEntry)
+                TextField(
+                  controller: widget.totalController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
-                    labelText: 'Player Name',
+                    labelText: 'Total Score',
                     border: OutlineInputBorder(),
                   ),
-                  textInputAction: TextInputAction.next,
-                  onChanged: (value) {
-                    nameController.text = value;
-                    onChanged();
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Quick Total Entry'),
-              value: isQuickEntry,
-              onChanged: onQuickEntryChanged,
-            ),
-            const SizedBox(height: 8),
-            if (isQuickEntry)
-              TextField(
-                controller: totalController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: const InputDecoration(
-                  labelText: 'Total Score',
-                  border: OutlineInputBorder(),
+                  onChanged: (_) => widget.onChanged(),
+                )
+              else
+                ScoreBreakdownForm(
+                  separatePointTokens: widget.separatePointTokens,
+                  autoConvertResources: widget.autoConvertResources,
+                  expansions: widget.expansions,
+                  pointTokensController: widget.pointTokensController,
+                  cardPointsController: widget.cardPointsController,
+                  basicEventsController: widget.basicEventsController,
+                  specialEventsController: widget.specialEventsController,
+                  prosperityPointsController:
+                      widget.prosperityPointsController,
+                  journeyPointsController: widget.journeyPointsController,
+                  berriesController: widget.berriesController,
+                  resinController: widget.resinController,
+                  pebblesController: widget.pebblesController,
+                  woodController: widget.woodController,
+                  pearlPointsController: widget.pearlPointsController,
+                  wonderPointsController: widget.wonderPointsController,
+                  weatherPointsController: widget.weatherPointsController,
+                  garlandPointsController: widget.garlandPointsController,
+                  ticketPointsController: widget.ticketPointsController,
+                  onChanged: widget.onChanged,
                 ),
-                onChanged: (_) => onChanged(),
-              )
-            else
-              ScoreBreakdownForm(
-                separatePointTokens: separatePointTokens,
-                autoConvertResources: autoConvertResources,
-                expansions: expansions,
-                pointTokensController: pointTokensController,
-                cardPointsController: cardPointsController,
-                basicEventsController: basicEventsController,
-                specialEventsController: specialEventsController,
-                prosperityPointsController: prosperityPointsController,
-                journeyPointsController: journeyPointsController,
-                berriesController: berriesController,
-                resinController: resinController,
-                pebblesController: pebblesController,
-                woodController: woodController,
-                pearlPointsController: pearlPointsController,
-                wonderPointsController: wonderPointsController,
-                weatherPointsController: weatherPointsController,
-                garlandPointsController: garlandPointsController,
-                ticketPointsController: ticketPointsController,
-                onChanged: onChanged,
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Text('Calculated Total:'),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.calculatedTotal?.toString() ?? '—',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
               ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Text('Calculated Total:'),
-                const SizedBox(width: 8),
-                Text(
-                  calculatedTotal?.toString() ?? '—',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
+            ],
           ],
         ),
       ),

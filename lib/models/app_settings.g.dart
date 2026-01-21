@@ -20,7 +20,7 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       separatePointTokens: fields[0] as bool,
       autoConvertResources: fields[1] as bool,
       darkMode: fields[2] as bool,
-      cardEntryMethodIndex: fields[3] as int,
+      cardEntryMethodIndex: fields[3] as int?,
     );
   }
 

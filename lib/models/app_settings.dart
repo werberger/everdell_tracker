@@ -20,17 +20,17 @@ class AppSettings extends HiveObject {
   final bool darkMode;
 
   @HiveField(3)
-  final int cardEntryMethodIndex;
+  final int? cardEntryMethodIndex;
 
   AppSettings({
     required this.separatePointTokens,
     required this.autoConvertResources,
     required this.darkMode,
-    this.cardEntryMethodIndex = 0,
+    this.cardEntryMethodIndex,
   });
 
   CardEntryMethod get cardEntryMethod =>
-      CardEntryMethod.values[cardEntryMethodIndex];
+      CardEntryMethod.values[cardEntryMethodIndex ?? 0];
 
   factory AppSettings.defaults() {
     return AppSettings(
@@ -51,7 +51,7 @@ class AppSettings extends HiveObject {
       separatePointTokens: separatePointTokens ?? this.separatePointTokens,
       autoConvertResources: autoConvertResources ?? this.autoConvertResources,
       darkMode: darkMode ?? this.darkMode,
-      cardEntryMethodIndex: cardEntryMethodIndex ?? this.cardEntryMethodIndex,
+      cardEntryMethodIndex: cardEntryMethodIndex ?? (this.cardEntryMethodIndex ?? 0),
     );
   }
 }

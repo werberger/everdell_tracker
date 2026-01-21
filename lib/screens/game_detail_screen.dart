@@ -96,7 +96,7 @@ class GameDetailScreen extends StatelessWidget {
               _line('Card Points', player.cardPoints),
               _line('Basic Events', player.basicEvents),
               _line('Special Events', player.specialEvents),
-              _line('Prosperity Points', player.prosperityPoints),
+              _line('Prosperity Bonus Points', player.prosperityPoints),
               _line('Journey Points', player.journeyPoints),
               _line('Berries', player.leftoverBerries),
               _line('Resin', player.leftoverResin),

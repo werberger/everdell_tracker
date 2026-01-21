@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/app_settings.dart';
 import '../models/expansion.dart';
 import 'score_breakdown_form.dart';
 
@@ -13,9 +14,17 @@ class PlayerInputCard extends StatefulWidget {
   final TextEditingController totalController;
   final bool separatePointTokens;
   final bool autoConvertResources;
+  final CardEntryMethod cardEntryMethod;
   final List<Expansion> expansions;
   final TextEditingController pointTokensController;
   final TextEditingController cardPointsController;
+  final TextEditingController constructionPointsController;
+  final TextEditingController critterPointsController;
+  final TextEditingController productionPointsController;
+  final TextEditingController destinationPointsController;
+  final TextEditingController governancePointsController;
+  final TextEditingController travellerPointsController;
+  final TextEditingController prosperityCardPointsController;
   final TextEditingController basicEventsController;
   final TextEditingController specialEventsController;
   final TextEditingController prosperityPointsController;
@@ -45,9 +54,17 @@ class PlayerInputCard extends StatefulWidget {
     required this.totalController,
     required this.separatePointTokens,
     required this.autoConvertResources,
+    required this.cardEntryMethod,
     required this.expansions,
     required this.pointTokensController,
     required this.cardPointsController,
+    required this.constructionPointsController,
+    required this.critterPointsController,
+    required this.productionPointsController,
+    required this.destinationPointsController,
+    required this.governancePointsController,
+    required this.travellerPointsController,
+    required this.prosperityCardPointsController,
     required this.basicEventsController,
     required this.specialEventsController,
     required this.prosperityPointsController,
@@ -230,9 +247,20 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 ScoreBreakdownForm(
                   separatePointTokens: widget.separatePointTokens,
                   autoConvertResources: widget.autoConvertResources,
+                  cardEntryMethod: widget.cardEntryMethod,
                   expansions: widget.expansions,
                   pointTokensController: widget.pointTokensController,
                   cardPointsController: widget.cardPointsController,
+                  constructionPointsController:
+                      widget.constructionPointsController,
+                  critterPointsController: widget.critterPointsController,
+                  productionPointsController: widget.productionPointsController,
+                  destinationPointsController:
+                      widget.destinationPointsController,
+                  governancePointsController: widget.governancePointsController,
+                  travellerPointsController: widget.travellerPointsController,
+                  prosperityCardPointsController:
+                      widget.prosperityCardPointsController,
                   basicEventsController: widget.basicEventsController,
                   specialEventsController: widget.specialEventsController,
                   prosperityPointsController:

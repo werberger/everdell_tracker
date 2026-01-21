@@ -398,9 +398,18 @@ class _NewGameScreenState extends State<NewGameScreen> {
               totalController: entry.totalController,
               separatePointTokens: settings.separatePointTokens,
               autoConvertResources: settings.autoConvertResources,
+              cardEntryMethod: settings.cardEntryMethod,
               expansions: _selectedExpansions,
               pointTokensController: entry.pointTokensController,
               cardPointsController: entry.cardPointsController,
+              constructionPointsController: entry.constructionPointsController,
+              critterPointsController: entry.critterPointsController,
+              productionPointsController: entry.productionPointsController,
+              destinationPointsController: entry.destinationPointsController,
+              governancePointsController: entry.governancePointsController,
+              travellerPointsController: entry.travellerPointsController,
+              prosperityCardPointsController:
+                  entry.prosperityCardPointsController,
               basicEventsController: entry.basicEventsController,
               specialEventsController: entry.specialEventsController,
               prosperityPointsController: entry.prosperityPointsController,
@@ -482,18 +491,23 @@ class _PlayerEntry {
   final TextEditingController ticketPointsController = TextEditingController();
   final TextEditingController playerOrderController = TextEditingController();
   final TextEditingController startingCardsController = TextEditingController();
+  final TextEditingController constructionPointsController =
+      TextEditingController();
+  final TextEditingController critterPointsController = TextEditingController();
+  final TextEditingController productionPointsController =
+      TextEditingController();
+  final TextEditingController destinationPointsController =
+      TextEditingController();
+  final TextEditingController governancePointsController =
+      TextEditingController();
+  final TextEditingController travellerPointsController =
+      TextEditingController();
+  final TextEditingController prosperityCardPointsController =
+      TextEditingController();
 
   bool isQuickEntry = false;
 
   _PlayerEntry({required this.id});
-
-  static int calculateStartingCards(int playerOrder) {
-    // Everdell starting cards: 1st=5, 2nd=6, 3rd=7, 4th+=8
-    if (playerOrder == 1) return 5;
-    if (playerOrder == 2) return 6;
-    if (playerOrder == 3) return 7;
-    return 8;
-  }
 
   factory _PlayerEntry.fromScore(PlayerScore score) {
     final entry = _PlayerEntry(id: score.playerId)
@@ -518,6 +532,16 @@ class _PlayerEntry {
       entry.weatherPointsController.text = _toText(score.weatherPoints);
       entry.garlandPointsController.text = _toText(score.garlandPoints);
       entry.ticketPointsController.text = _toText(score.ticketPoints);
+      entry.constructionPointsController.text =
+          _toText(score.constructionPoints);
+      entry.critterPointsController.text = _toText(score.critterPoints);
+      entry.productionPointsController.text = _toText(score.productionPoints);
+      entry.destinationPointsController.text =
+          _toText(score.destinationPoints);
+      entry.governancePointsController.text = _toText(score.governancePoints);
+      entry.travellerPointsController.text = _toText(score.travellerPoints);
+      entry.prosperityCardPointsController.text =
+          _toText(score.prosperityCardPoints);
     }
 
     entry.playerOrderController.text = _toText(score.playerOrder);
@@ -555,6 +579,13 @@ class _PlayerEntry {
       tiebreakerResources: tiebreakerResources,
       isWinner: false,
       isQuickEntry: isQuickEntry,
+      constructionPoints: _parse(constructionPointsController),
+      critterPoints: _parse(critterPointsController),
+      productionPoints: _parse(productionPointsController),
+      destinationPoints: _parse(destinationPointsController),
+      governancePoints: _parse(governancePointsController),
+      travellerPoints: _parse(travellerPointsController),
+      prosperityCardPoints: _parse(prosperityCardPointsController),
     );
 
     final total = isQuickEntry
@@ -588,6 +619,13 @@ class _PlayerEntry {
       isQuickEntry: isQuickEntry,
       playerOrder: _parse(playerOrderController),
       startingCards: _parse(startingCardsController),
+      constructionPoints: baseScore.constructionPoints,
+      critterPoints: baseScore.critterPoints,
+      productionPoints: baseScore.productionPoints,
+      destinationPoints: baseScore.destinationPoints,
+      governancePoints: baseScore.governancePoints,
+      travellerPoints: baseScore.travellerPoints,
+      prosperityCardPoints: baseScore.prosperityCardPoints,
     );
   }
 
@@ -623,6 +661,13 @@ class _PlayerEntry {
     ticketPointsController.dispose();
     playerOrderController.dispose();
     startingCardsController.dispose();
+    constructionPointsController.dispose();
+    critterPointsController.dispose();
+    productionPointsController.dispose();
+    destinationPointsController.dispose();
+    governancePointsController.dispose();
+    travellerPointsController.dispose();
+    prosperityCardPointsController.dispose();
   }
 
   static String _toText(int? value) => value == null ? '' : value.toString();

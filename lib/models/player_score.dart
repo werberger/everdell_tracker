@@ -76,6 +76,29 @@ class PlayerScore extends HiveObject {
   @HiveField(22)
   final int? startingCards;
 
+  // Card entry by type
+  @HiveField(23)
+  final int? constructionPoints;
+
+  @HiveField(24)
+  final int? critterPoints;
+
+  // Card entry by color
+  @HiveField(25)
+  final int? productionPoints; // Green
+
+  @HiveField(26)
+  final int? destinationPoints; // Red
+
+  @HiveField(27)
+  final int? governancePoints; // Blue
+
+  @HiveField(28)
+  final int? travellerPoints; // Tan
+
+  @HiveField(29)
+  final int? prosperityCardPoints; // Purple (base card points)
+
   PlayerScore({
     required this.playerId,
     required this.playerName,
@@ -100,5 +123,12 @@ class PlayerScore extends HiveObject {
     required this.isQuickEntry,
     this.playerOrder,
     this.startingCards,
+    this.constructionPoints,
+    this.critterPoints,
+    this.productionPoints,
+    this.destinationPoints,
+    this.governancePoints,
+    this.travellerPoints,
+    this.prosperityCardPoints,
   });
 }

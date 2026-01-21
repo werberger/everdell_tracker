@@ -14,6 +14,8 @@ class SettingsProvider extends ChangeNotifier {
 
   bool get darkMode => _settings.darkMode;
 
+  CardEntryMethod get cardEntryMethod => _settings.cardEntryMethod;
+
   Future<void> loadSettings() async {
     _settings = await StorageService.getSettings();
     notifyListeners();
@@ -33,6 +35,12 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> setDarkMode(bool value) async {
     _settings = _settings.copyWith(darkMode: value);
+    await StorageService.saveSettings(_settings);
+    notifyListeners();
+  }
+
+  Future<void> setCardEntryMethod(CardEntryMethod value) async {
+    _settings = _settings.copyWith(cardEntryMethodIndex: value.index);
     await StorageService.saveSettings(_settings);
     notifyListeners();
   }

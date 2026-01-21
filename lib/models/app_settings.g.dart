@@ -20,19 +20,22 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       separatePointTokens: fields[0] as bool,
       autoConvertResources: fields[1] as bool,
       darkMode: fields[2] as bool,
+      cardEntryMethodIndex: fields[3] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.separatePointTokens)
       ..writeByte(1)
       ..write(obj.autoConvertResources)
       ..writeByte(2)
-      ..write(obj.darkMode);
+      ..write(obj.darkMode)
+      ..writeByte(3)
+      ..write(obj.cardEntryMethodIndex);
   }
 
   @override

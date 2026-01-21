@@ -40,13 +40,20 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       isQuickEntry: fields[20] as bool,
       playerOrder: fields[21] as int?,
       startingCards: fields[22] as int?,
+      constructionPoints: fields[23] as int?,
+      critterPoints: fields[24] as int?,
+      productionPoints: fields[25] as int?,
+      destinationPoints: fields[26] as int?,
+      governancePoints: fields[27] as int?,
+      travellerPoints: fields[28] as int?,
+      prosperityCardPoints: fields[29] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PlayerScore obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(30)
       ..writeByte(0)
       ..write(obj.playerId)
       ..writeByte(1)
@@ -92,7 +99,21 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       ..writeByte(21)
       ..write(obj.playerOrder)
       ..writeByte(22)
-      ..write(obj.startingCards);
+      ..write(obj.startingCards)
+      ..writeByte(23)
+      ..write(obj.constructionPoints)
+      ..writeByte(24)
+      ..write(obj.critterPoints)
+      ..writeByte(25)
+      ..write(obj.productionPoints)
+      ..writeByte(26)
+      ..write(obj.destinationPoints)
+      ..writeByte(27)
+      ..write(obj.governancePoints)
+      ..writeByte(28)
+      ..write(obj.travellerPoints)
+      ..writeByte(29)
+      ..write(obj.prosperityCardPoints);
   }
 
   @override

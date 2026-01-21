@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../models/app_settings.dart';
 import '../models/expansion.dart';
 
 class ScoreBreakdownForm extends StatefulWidget {
   final bool separatePointTokens;
   final bool autoConvertResources;
+  final CardEntryMethod cardEntryMethod;
   final List<Expansion> expansions;
   final TextEditingController pointTokensController;
   final TextEditingController cardPointsController;
+  final TextEditingController constructionPointsController;
+  final TextEditingController critterPointsController;
+  final TextEditingController productionPointsController;
+  final TextEditingController destinationPointsController;
+  final TextEditingController governancePointsController;
+  final TextEditingController travellerPointsController;
+  final TextEditingController prosperityCardPointsController;
   final TextEditingController basicEventsController;
   final TextEditingController specialEventsController;
   final TextEditingController prosperityPointsController;
@@ -28,9 +37,17 @@ class ScoreBreakdownForm extends StatefulWidget {
     super.key,
     required this.separatePointTokens,
     required this.autoConvertResources,
+    required this.cardEntryMethod,
     required this.expansions,
     required this.pointTokensController,
     required this.cardPointsController,
+    required this.constructionPointsController,
+    required this.critterPointsController,
+    required this.productionPointsController,
+    required this.destinationPointsController,
+    required this.governancePointsController,
+    required this.travellerPointsController,
+    required this.prosperityCardPointsController,
     required this.basicEventsController,
     required this.specialEventsController,
     required this.prosperityPointsController,
@@ -70,10 +87,44 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
             label: 'Point Tokens',
             controller: widget.pointTokensController,
           ),
-        _numberField(
-          label: 'Construction & Critter Points',
-          controller: widget.cardPointsController,
-        ),
+        // Card points based on entry method
+        if (widget.cardEntryMethod == CardEntryMethod.simple)
+          _numberField(
+            label: 'Construction & Critter Points',
+            controller: widget.cardPointsController,
+          ),
+        if (widget.cardEntryMethod == CardEntryMethod.byType) ...[
+          _numberField(
+            label: 'Construction Points',
+            controller: widget.constructionPointsController,
+          ),
+          _numberField(
+            label: 'Critter Points',
+            controller: widget.critterPointsController,
+          ),
+        ],
+        if (widget.cardEntryMethod == CardEntryMethod.byColor) ...[
+          _numberField(
+            label: 'Production (Green)',
+            controller: widget.productionPointsController,
+          ),
+          _numberField(
+            label: 'Destination (Red)',
+            controller: widget.destinationPointsController,
+          ),
+          _numberField(
+            label: 'Governance (Blue)',
+            controller: widget.governancePointsController,
+          ),
+          _numberField(
+            label: 'Traveller (Tan)',
+            controller: widget.travellerPointsController,
+          ),
+          _numberField(
+            label: 'Prosperity (Purple)',
+            controller: widget.prosperityCardPointsController,
+          ),
+        ],
         _numberField(
           label: 'Basic Events (count)',
           controller: widget.basicEventsController,
@@ -83,7 +134,7 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
           controller: widget.specialEventsController,
         ),
         _numberField(
-          label: 'Prosperity Points',
+          label: 'Prosperity Bonus Points',
           controller: widget.prosperityPointsController,
         ),
         _numberField(

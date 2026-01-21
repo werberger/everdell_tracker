@@ -5,8 +5,11 @@ class ScoreCalculator {
     required PlayerScore score,
     required bool autoConvertResources,
   }) {
+    // Calculate card points based on entry method
+    final cardPoints = _calculateCardPoints(score);
+
     final basePoints = _safe(score.pointTokens) +
-        _safe(score.cardPoints) +
+        cardPoints +
         _safe(score.basicEvents) * 3 +
         _safe(score.specialEvents) +
         _safe(score.prosperityPoints) +
@@ -21,6 +24,29 @@ class ScoreCalculator {
         autoConvertResources ? calculateResourcePoints(score) : 0;
 
     return basePoints + resourcePoints;
+  }
+
+  static int _calculateCardPoints(PlayerScore score) {
+    // If by-color fields are populated, use those
+    if (score.productionPoints != null ||
+        score.destinationPoints != null ||
+        score.governancePoints != null ||
+        score.travellerPoints != null ||
+        score.prosperityCardPoints != null) {
+      return _safe(score.productionPoints) +
+          _safe(score.destinationPoints) +
+          _safe(score.governancePoints) +
+          _safe(score.travellerPoints) +
+          _safe(score.prosperityCardPoints);
+    }
+
+    // If by-type fields are populated, use those
+    if (score.constructionPoints != null || score.critterPoints != null) {
+      return _safe(score.constructionPoints) + _safe(score.critterPoints);
+    }
+
+    // Otherwise use simple cardPoints field
+    return _safe(score.cardPoints);
   }
 
   static int calculateResourcePoints(PlayerScore score) {

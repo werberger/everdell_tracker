@@ -144,7 +144,7 @@ class StatsService {
       'Card Points': 0,
       'Basic Events': 0,
       'Special Events': 0,
-      'Prosperity Points': 0,
+      'Prosperity Bonus Points': 0,
       'Journey Points': 0,
       'Berries': 0,
       'Resin': 0,
@@ -163,8 +163,8 @@ class StatsService {
       totals['Basic Events'] = totals['Basic Events']! + _safe(score.basicEvents);
       totals['Special Events'] =
           totals['Special Events']! + _safe(score.specialEvents);
-      totals['Prosperity Points'] =
-          totals['Prosperity Points']! + _safe(score.prosperityPoints);
+      totals['Prosperity Bonus Points'] =
+          totals['Prosperity Bonus Points']! + _safe(score.prosperityPoints);
       totals['Journey Points'] =
           totals['Journey Points']! + _safe(score.journeyPoints);
       totals['Berries'] = totals['Berries']! + _safe(score.leftoverBerries);

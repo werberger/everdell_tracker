@@ -62,4 +62,25 @@ class AppSettings extends HiveObject {
       useFanLayout: useFanLayout ?? this.useFanLayout,
     );
   }
+
+  // JSON serialization for web compatibility
+  Map<String, dynamic> toJson() {
+    return {
+      'separatePointTokens': separatePointTokens,
+      'autoConvertResources': autoConvertResources,
+      'darkMode': darkMode,
+      'cardEntryMethodIndex': cardEntryMethodIndex,
+      'useFanLayout': useFanLayout,
+    };
+  }
+
+  factory AppSettings.fromJson(Map<String, dynamic> json) {
+    return AppSettings(
+      separatePointTokens: json['separatePointTokens'] ?? true,
+      autoConvertResources: json['autoConvertResources'] ?? true,
+      darkMode: json['darkMode'] ?? false,
+      cardEntryMethodIndex: json['cardEntryMethodIndex'],
+      useFanLayout: json['useFanLayout'] ?? false,
+    );
+  }
 }

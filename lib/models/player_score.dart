@@ -144,4 +144,87 @@ class PlayerScore extends HiveObject {
     this.cardTokenCounts,
     this.cardResourceCounts,
   });
+
+  // JSON serialization for web compatibility
+  Map<String, dynamic> toJson() {
+    return {
+      'playerId': playerId,
+      'playerName': playerName,
+      'pointTokens': pointTokens,
+      'cardPoints': cardPoints,
+      'basicEvents': basicEvents,
+      'specialEvents': specialEvents,
+      'prosperityPoints': prosperityPoints,
+      'journeyPoints': journeyPoints,
+      'leftoverBerries': leftoverBerries,
+      'leftoverResin': leftoverResin,
+      'leftoverPebbles': leftoverPebbles,
+      'leftoverWood': leftoverWood,
+      'pearlPoints': pearlPoints,
+      'wonderPoints': wonderPoints,
+      'weatherPoints': weatherPoints,
+      'garlandPoints': garlandPoints,
+      'ticketPoints': ticketPoints,
+      'totalScore': totalScore,
+      'tiebreakerResources': tiebreakerResources,
+      'isWinner': isWinner,
+      'isQuickEntry': isQuickEntry,
+      'playerOrder': playerOrder,
+      'startingCards': startingCards,
+      'constructionPoints': constructionPoints,
+      'critterPoints': critterPoints,
+      'productionPoints': productionPoints,
+      'destinationPoints': destinationPoints,
+      'governancePoints': governancePoints,
+      'travellerPoints': travellerPoints,
+      'prosperityCardPoints': prosperityCardPoints,
+      'selectedCardIds': selectedCardIds,
+      'cardTokenCounts': cardTokenCounts,
+      'cardResourceCounts': cardResourceCounts,
+    };
+  }
+
+  factory PlayerScore.fromJson(Map<String, dynamic> json) {
+    return PlayerScore(
+      playerId: json['playerId'],
+      playerName: json['playerName'],
+      pointTokens: json['pointTokens'],
+      cardPoints: json['cardPoints'],
+      basicEvents: json['basicEvents'],
+      specialEvents: json['specialEvents'],
+      prosperityPoints: json['prosperityPoints'],
+      journeyPoints: json['journeyPoints'],
+      leftoverBerries: json['leftoverBerries'],
+      leftoverResin: json['leftoverResin'],
+      leftoverPebbles: json['leftoverPebbles'],
+      leftoverWood: json['leftoverWood'],
+      pearlPoints: json['pearlPoints'],
+      wonderPoints: json['wonderPoints'],
+      weatherPoints: json['weatherPoints'],
+      garlandPoints: json['garlandPoints'],
+      ticketPoints: json['ticketPoints'],
+      totalScore: json['totalScore'],
+      tiebreakerResources: json['tiebreakerResources'],
+      isWinner: json['isWinner'],
+      isQuickEntry: json['isQuickEntry'],
+      playerOrder: json['playerOrder'],
+      startingCards: json['startingCards'],
+      constructionPoints: json['constructionPoints'],
+      critterPoints: json['critterPoints'],
+      productionPoints: json['productionPoints'],
+      destinationPoints: json['destinationPoints'],
+      governancePoints: json['governancePoints'],
+      travellerPoints: json['travellerPoints'],
+      prosperityCardPoints: json['prosperityCardPoints'],
+      selectedCardIds: json['selectedCardIds'] != null
+          ? List<String>.from(json['selectedCardIds'])
+          : null,
+      cardTokenCounts: json['cardTokenCounts'] != null
+          ? Map<String, int>.from(json['cardTokenCounts'])
+          : null,
+      cardResourceCounts: json['cardResourceCounts'] != null
+          ? Map<String, int>.from(json['cardResourceCounts'])
+          : null,
+    );
+  }
 }

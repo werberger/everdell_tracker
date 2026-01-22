@@ -33,4 +33,31 @@ class Game extends HiveObject {
     this.notes,
     required this.winnerIds,
   });
+
+  // JSON serialization for web compatibility
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'dateTime': dateTime.toIso8601String(),
+      'expansionsUsed': expansionsUsed.map((e) => e.toJson()).toList(),
+      'players': players.map((p) => p.toJson()).toList(),
+      'notes': notes,
+      'winnerIds': winnerIds,
+    };
+  }
+
+  factory Game.fromJson(Map<String, dynamic> json) {
+    return Game(
+      id: json['id'],
+      dateTime: DateTime.parse(json['dateTime']),
+      expansionsUsed: (json['expansionsUsed'] as List)
+          .map((e) => Expansion.fromJson(e))
+          .toList(),
+      players: (json['players'] as List)
+          .map((p) => PlayerScore.fromJson(p))
+          .toList(),
+      notes: json['notes'],
+      winnerIds: List<String>.from(json['winnerIds']),
+    );
+  }
 }

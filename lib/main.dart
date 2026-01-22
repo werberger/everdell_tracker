@@ -5,13 +5,11 @@ import 'providers/game_provider.dart';
 import 'providers/player_provider.dart';
 import 'providers/settings_provider.dart';
 import 'screens/home_screen.dart';
-import 'services/storage_service.dart';
+import 'services/platform_storage_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await StorageService.initialize();
-  await StorageService.registerAdapters();
-  await StorageService.openBoxes();
+  await PlatformStorageService.initialize();
   runApp(const EverdellApp());
 }
 

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: everdell-tracker-web
+    env: static
+    buildCommand: |
+      # Install Flutter
+      git clone https://github.com/flutter/flutter.git -b stable --depth 1
+      export PATH="$PATH:`pwd`/flutter/bin"
+      
+      # Build web app
+      flutter doctor
+      flutter pub get
+      flutter build web --release --web-renderer canvaskit
+    staticPublishPath: build/web
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

@@ -35,4 +35,11 @@ extension ExpansionLabel on Expansion {
         return 'Newleaf';
     }
   }
+
+  // JSON serialization
+  String toJson() => name;
+
+  static Expansion fromJson(String json) {
+    return Expansion.values.firstWhere((e) => e.name == json);
+  }
 }

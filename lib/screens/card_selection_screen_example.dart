@@ -573,67 +573,68 @@ class _CardSelectionScreenExampleState
             Container(
               color: Colors.grey.shade100,
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Your City',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      Text(
-                        '$totalCards card${totalCards != 1 ? 's' : ''}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _selectedCardCounts.length,
-                      itemBuilder: (context, index) {
-                        final cardId = _selectedCardCounts.keys.elementAt(index);
-                        final count = _selectedCardCounts[cardId]!;
-                        final card = _allCards.firstWhere((c) => c.id == cardId);
-                        
-                        return Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          width: 70,
-                          child: Stack(
-                            children: [
-                              CardDisplayWidget(
-                                card: card,
-                                isSelected: true,
-                                onTap: () => _removeCard(card),
+                  Expanded(
+                    child: SizedBox(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _selectedCardCounts.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0, top: 30),
+                              child: Text(
+                                'Your City',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                              if (count > 1)
-                                Positioned(
-                                  top: 2,
-                                  right: 2,
-                                  child: CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: Colors.amber,
-                                    child: Text(
-                                      '$count',
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+                            );
+                          }
+
+                          final cardId = _selectedCardCounts.keys.elementAt(index - 1);
+                          final count = _selectedCardCounts[cardId]!;
+                          final card = _allCards.firstWhere((c) => c.id == cardId);
+                          
+                          return Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            width: 70,
+                            child: Stack(
+                              children: [
+                                CardDisplayWidget(
+                                  card: card,
+                                  isSelected: true,
+                                  onTap: () => _removeCard(card),
+                                ),
+                                if (count > 1)
+                                  Positioned(
+                                    top: 2,
+                                    right: 2,
+                                    child: CircleAvatar(
+                                      radius: 12,
+                                      backgroundColor: Colors.amber,
+                                      child: Text(
+                                        '$count',
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
+                  ),
+                  Text(
+                    '$totalCards card${totalCards != 1 ? 's' : ''}',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),

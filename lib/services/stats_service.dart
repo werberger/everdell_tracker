@@ -1,6 +1,27 @@
 import '../models/game.dart';
 import '../models/player_score.dart';
 import '../models/expansion.dart';
+import 'card_service.dart';
+
+class CardCombination {
+  final List<String> cardNames;
+  final int count;
+
+  const CardCombination({
+    required this.cardNames,
+    required this.count,
+  });
+}
+
+class CardUsageStat {
+  final String cardName;
+  final int count;
+
+  const CardUsageStat({
+    required this.cardName,
+    required this.count,
+  });
+}
 
 class PlayerStats {
   final String playerName;
@@ -9,10 +30,13 @@ class PlayerStats {
   final double winRate;
   final double averageScore;
   final int highestScore;
+  final int lowestScore;
   final Map<String, double> averageBreakdown;
   final Map<String, int> expansionCounts;
   final Map<int, int> positionCounts;
   final Map<int, int> positionWins;
+  final List<CardCombination> winningCardCombinations;
+  final List<CardUsageStat> mostUsedCards;
 
   const PlayerStats({
     required this.playerName,
@@ -21,10 +45,13 @@ class PlayerStats {
     required this.winRate,
     required this.averageScore,
     required this.highestScore,
+    required this.lowestScore,
     required this.averageBreakdown,
     required this.expansionCounts,
     required this.positionCounts,
     required this.positionWins,
+    required this.winningCardCombinations,
+    required this.mostUsedCards,
   });
 
   double getPositionWinRate(int position) {
@@ -82,8 +109,20 @@ class StatsService {
         : playerScores
             .map((score) => score.totalScore)
             .reduce((a, b) => a > b ? a : b);
+    final lowestScore = playerScores.isEmpty
+        ? 0
+        : playerScores
+            .map((score) => score.totalScore)
+            .reduce((a, b) => a < b ? a : b);
 
     final averages = _averageBreakdown(playerScores);
+
+    // Calculate card statistics
+    final cardCombinations = _calculateWinningCombinations(
+      playerName: playerName,
+      games: playerGames,
+    );
+    final cardUsage = _calculateCardUsage(playerScores);
 
     final expansionCounts = <String, int>{};
     for (final game in playerGames) {
@@ -127,11 +166,122 @@ class StatsService {
       winRate: gamesPlayed == 0 ? 0 : wins / gamesPlayed,
       averageScore: gamesPlayed == 0 ? 0 : totalScore / gamesPlayed,
       highestScore: highestScore,
+      lowestScore: lowestScore,
       averageBreakdown: averages,
       expansionCounts: expansionCounts,
       positionCounts: positionCounts,
       positionWins: positionWins,
+      winningCardCombinations: cardCombinations,
+      mostUsedCards: cardUsage,
     );
+  }
+
+  static List<CardCombination> _calculateWinningCombinations({
+    required String playerName,
+    required List<Game> games,
+  }) {
+    // Track combinations of 3+ cards from winning cities
+    final combinationCounts = <String, int>{};
+
+    for (final game in games) {
+      // Check if this player won
+      final isWinner = game.winnerIds.any((id) {
+        return game.players.any(
+          (player) => player.playerId == id && player.playerName == playerName,
+        );
+      });
+
+      if (!isWinner) continue;
+
+      // Get the winner's score
+      final winnerScore = game.players.firstWhere(
+        (player) => player.playerName == playerName,
+      );
+
+      // Only analyze if they used visual card selection
+      if (winnerScore.selectedCardIds == null ||
+          winnerScore.selectedCardIds!.isEmpty) {
+        continue;
+      }
+
+      // Get all unique card combinations of 3+ cards
+      final cardIds = winnerScore.selectedCardIds!.toSet().toList()..sort();
+      if (cardIds.length < 3) continue;
+
+      // For performance, only check combinations of 3-5 cards
+      for (int size = 3; size <= 5 && size <= cardIds.length; size++) {
+        final combinations = _getCombinations(cardIds, size);
+        for (final combo in combinations) {
+          final sortedCombo = combo.toList()..sort();
+          final key = sortedCombo.join(',');
+          combinationCounts.update(key, (value) => value + 1, ifAbsent: () => 1);
+        }
+      }
+    }
+
+    // Convert to list and sort by count, then convert IDs to names
+    final result = combinationCounts.entries.map((entry) {
+      final cardIds = entry.key.split(',');
+      final cardNames = cardIds.map((id) => _getCardName(id)).toList();
+      return CardCombination(
+        cardNames: cardNames,
+        count: entry.value,
+      );
+    }).toList()
+      ..sort((a, b) => b.count.compareTo(a.count));
+
+    return result;
+  }
+
+  static List<List<String>> _getCombinations(List<String> items, int size) {
+    if (size == 0) return [[]];
+    if (items.isEmpty) return [];
+
+    final first = items.first;
+    final rest = items.sublist(1);
+
+    // Combinations with first item
+    final withFirst = _getCombinations(rest, size - 1)
+        .map((combo) => [first, ...combo])
+        .toList();
+
+    // Combinations without first item
+    final withoutFirst = _getCombinations(rest, size);
+
+    return [...withFirst, ...withoutFirst];
+  }
+
+  static List<CardUsageStat> _calculateCardUsage(List<PlayerScore> scores) {
+    final cardCounts = <String, int>{};
+
+    for (final score in scores) {
+      if (score.selectedCardIds == null) continue;
+
+      for (final cardId in score.selectedCardIds!) {
+        cardCounts.update(cardId, (value) => value + 1, ifAbsent: () => 1);
+      }
+    }
+
+    final result = cardCounts.entries.map((entry) {
+      return CardUsageStat(
+        cardName: _getCardName(entry.key),
+        count: entry.value,
+      );
+    }).toList()
+      ..sort((a, b) => b.count.compareTo(a.count));
+
+    return result;
+  }
+
+  // Helper to convert card ID to display name
+  static String _getCardName(String cardId) {
+    // Convert snake_case to Title Case
+    return cardId
+        .split('_')
+        .map((word) => word.isEmpty
+            ? ''
+            : word[0].toUpperCase() + word.substring(1).toLowerCase())
+        .join(' ');
   }
 
   static Map<String, double> _averageBreakdown(List<PlayerScore> scores) {

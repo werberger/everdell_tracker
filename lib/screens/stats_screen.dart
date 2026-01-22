@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../models/game.dart';
 import '../providers/game_provider.dart';
 import '../services/stats_service.dart';
+import 'player_detail_screen.dart';
 
 class StatsScreen extends StatefulWidget {
   const StatsScreen({super.key});
@@ -34,28 +35,225 @@ class _StatsScreenState extends State<StatsScreen> {
       ),
       body: playerNames.isEmpty
           ? const Center(child: Text('No players yet.'))
-          : ListView.builder(
+          : ListView(
               padding: const EdgeInsets.all(16),
-              itemCount: playerNames.length,
-              itemBuilder: (context, index) {
-                final name = playerNames[index];
-                final stats = StatsService.calculatePlayerStats(
-                  playerName: name,
-                  games: filteredGames,
-                );
-                return Card(
-                  child: ListTile(
-                    title: Text(name),
-                    subtitle: Text(
-                      'Win rate: ${(stats.winRate * 100).toStringAsFixed(1)}% '
-                      '• Avg: ${stats.averageScore.toStringAsFixed(1)}',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => _showDetails(stats),
+              children: [
+                // Overall stats card
+                _buildOverallStatsCard(filteredGames, playerNames),
+                const SizedBox(height: 16),
+                const Text(
+                  'Players',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
+                ),
+                const SizedBox(height: 8),
+                // Player list
+                ...playerNames.map((name) {
+                  final stats = StatsService.calculatePlayerStats(
+                    playerName: name,
+                    games: filteredGames,
+                  );
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Card(
+                      child: ListTile(
+                        title: Text(
+                          name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Icon(Icons.emoji_events,
+                                    size: 14, color: Colors.amber.shade700),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${(stats.winRate * 100).toStringAsFixed(0)}% win rate',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(width: 12),
+                                const Icon(Icons.bar_chart, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${stats.averageScore.toStringAsFixed(1)} avg',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${stats.wins} wins in ${stats.gamesPlayed} games',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _navigateToPlayerDetail(stats),
+                      ),
+                    ),
+                  );
+                }),
+              ],
             ),
+    );
+  }
+
+  Widget _buildOverallStatsCard(List<Game> games, List<String> playerNames) {
+    final totalGames = games.length;
+    final totalPlayers = playerNames.length;
+    
+    // Calculate average score across all games
+    double avgScore = 0;
+    int scoreCount = 0;
+    for (final game in games) {
+      for (final player in game.players) {
+        avgScore += player.totalScore;
+        scoreCount++;
+      }
+    }
+    if (scoreCount > 0) avgScore /= scoreCount;
+
+    // Find highest scoring game
+    int highestScore = 0;
+    String highestScorer = '';
+    for (final game in games) {
+      for (final player in game.players) {
+        if (player.totalScore > highestScore) {
+          highestScore = player.totalScore;
+          highestScorer = player.playerName;
+        }
+      }
+    }
+
+    return Card(
+      elevation: 4,
+      color: Colors.blue.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Row(
+            children: [
+              Icon(Icons.public, color: Colors.blue.shade700),
+              const SizedBox(width: 8),
+              const Text(
+                'Overall Statistics',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildOverallStatItem(
+                  'Total Games',
+                  totalGames.toString(),
+                  Icons.games,
+                  Colors.blue,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildOverallStatItem(
+                  'Players',
+                  totalPlayers.toString(),
+                  Icons.people,
+                  Colors.green,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _buildOverallStatItem(
+                  'Avg Score',
+                  avgScore.toStringAsFixed(1),
+                  Icons.trending_up,
+                  Colors.orange,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildOverallStatItem(
+                  'High Score',
+                  highestScore.toString(),
+                  Icons.star,
+                  Colors.amber,
+                ),
+              ),
+            ],
+          ),
+          if (highestScorer.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.emoji_events, color: Colors.amber),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Highest scoring player: $highestScorer ($highestScore pts)',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverallStatItem(
+      String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -78,104 +276,14 @@ class _StatsScreenState extends State<StatsScreen> {
     setState(() => _dateRange = range);
   }
 
-  List<Widget> _buildPositionStats(PlayerStats stats) {
-    final positions = stats.positionCounts.keys.toList()..sort();
-    return positions.map((position) {
-      final games = stats.positionCounts[position] ?? 0;
-      final wins = stats.positionWins[position] ?? 0;
-      final winRate = stats.getPositionWinRate(position);
-      final percentage = (games / stats.gamesPlayed * 100).toStringAsFixed(1);
-      
-      String positionLabel;
-      switch (position) {
-        case 1:
-          positionLabel = '1st';
-          break;
-        case 2:
-          positionLabel = '2nd';
-          break;
-        case 3:
-          positionLabel = '3rd';
-          break;
-        default:
-          positionLabel = '${position}th';
-      }
-      
-      return Text(
-        '$positionLabel: $games games ($percentage%) • '
-        '$wins wins (${(winRate * 100).toStringAsFixed(1)}% win rate)',
-      );
-    }).toList();
-  }
-
-  Future<void> _showDetails(PlayerStats stats) async {
-    final dateText = _dateRange == null
-        ? 'All time'
-        : '${DateFormat('yyyy-MM-dd').format(_dateRange!.start)}'
-            ' - ${DateFormat('yyyy-MM-dd').format(_dateRange!.end)}';
-
-    await showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(stats.playerName),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Range: $dateText'),
-                const SizedBox(height: 8),
-                Text('Games Played: ${stats.gamesPlayed}'),
-                Text('Wins: ${stats.wins}'),
-                Text(
-                  'Win Rate: ${(stats.winRate * 100).toStringAsFixed(1)}%',
-                ),
-                Text(
-                  'Average Score: ${stats.averageScore.toStringAsFixed(1)}',
-                ),
-                Text('Highest Score: ${stats.highestScore}'),
-                const SizedBox(height: 12),
-                const Text(
-                  'Average Breakdown',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...stats.averageBreakdown.entries.map(
-                  (entry) => Text(
-                    '${entry.key}: ${entry.value.toStringAsFixed(1)}',
-                  ),
-                ),
-                if (stats.expansionCounts.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Expansions Played',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ...stats.expansionCounts.entries.map(
-                    (entry) => Text('${entry.key}: ${entry.value}'),
-                  ),
-                ],
-                if (stats.positionCounts.isNotEmpty) ...[
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Player Position Statistics',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  ..._buildPositionStats(stats),
-                ],
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
+  void _navigateToPlayerDetail(PlayerStats stats) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlayerDetailScreen(
+          stats: stats,
+          dateRange: _dateRange,
+        ),
+      ),
     );
   }
 }

@@ -64,7 +64,7 @@ To enable release signing in GitHub Actions, you need to:
        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-       echo "storeFile=app/everdell-release-key.jks" >> android/key.properties
+       echo "storeFile=everdell-release-key.jks" >> android/key.properties
    ```
 
 ## ⚠️ CRITICAL: Backup Your Keystore

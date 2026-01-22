@@ -23,11 +23,15 @@ class AppSettings extends HiveObject {
   @HiveField(3)
   final int? cardEntryMethodIndex;
 
+  @HiveField(4)
+  final bool useFanLayout; // true = fan/carousel, false = table top/grid
+
   AppSettings({
     required this.separatePointTokens,
     required this.autoConvertResources,
     required this.darkMode,
     this.cardEntryMethodIndex,
+    this.useFanLayout = false, // Default to table top
   });
 
   CardEntryMethod get cardEntryMethod =>
@@ -39,6 +43,7 @@ class AppSettings extends HiveObject {
       autoConvertResources: true,
       darkMode: false,
       cardEntryMethodIndex: 3, // visual = index 3
+      useFanLayout: false, // Default to table top
     );
   }
 
@@ -47,12 +52,14 @@ class AppSettings extends HiveObject {
     bool? autoConvertResources,
     bool? darkMode,
     int? cardEntryMethodIndex,
+    bool? useFanLayout,
   }) {
     return AppSettings(
       separatePointTokens: separatePointTokens ?? this.separatePointTokens,
       autoConvertResources: autoConvertResources ?? this.autoConvertResources,
       darkMode: darkMode ?? this.darkMode,
       cardEntryMethodIndex: cardEntryMethodIndex ?? (this.cardEntryMethodIndex ?? 0),
+      useFanLayout: useFanLayout ?? this.useFanLayout,
     );
   }
 }

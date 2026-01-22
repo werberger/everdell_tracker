@@ -21,13 +21,14 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       autoConvertResources: fields[1] as bool,
       darkMode: fields[2] as bool,
       cardEntryMethodIndex: fields[3] as int?,
+      useFanLayout: (fields[4] as bool?) ?? false, // Default to false for existing data
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.separatePointTokens)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeByte(2)
       ..write(obj.darkMode)
       ..writeByte(3)
-      ..write(obj.cardEntryMethodIndex);
+      ..write(obj.cardEntryMethodIndex)
+      ..writeByte(4)
+      ..write(obj.useFanLayout);
   }
 
   @override

@@ -44,4 +44,10 @@ class SettingsProvider extends ChangeNotifier {
     await StorageService.saveSettings(_settings);
     notifyListeners();
   }
+
+  Future<void> setUseFanLayout(bool value) async {
+    _settings = _settings.copyWith(useFanLayout: value);
+    await StorageService.saveSettings(_settings);
+    notifyListeners();
+  }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/everdell_card.dart';
+import '../providers/settings_provider.dart';
 import '../services/card_service.dart';
 import '../widgets/card_display_widget.dart';
+import '../widgets/card_carousel_widget.dart';
 
 /// Card selection screen with multiple common cards, pairing, and proper city size
 class CardSelectionScreenExample extends StatefulWidget {
@@ -45,6 +48,8 @@ class _CardSelectionScreenExampleState
   String _searchQuery = '';
   bool _isLoading = true;
   int _currentScore = 0;
+  bool _useCarouselView = true; // Toggle between carousel and list view
+  CardColor? _selectedColorFilter; // For carousel color filtering
 
   // For conditional scoring inputs
   final Map<String, int> _tokenCounts = {};
@@ -63,6 +68,15 @@ class _CardSelectionScreenExampleState
   @override
   void initState() {
     super.initState();
+    
+    // Read setting for initial view (after first frame)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final settings = context.read<SettingsProvider>();
+      setState(() {
+        _useCarouselView = settings.settings.useFanLayout;
+      });
+    });
+    
     // Pre-populate with initial data
     if (widget.initialCardCounts != null) {
       _selectedCardCounts = Map<String, int>.from(widget.initialCardCounts!);
@@ -554,6 +568,77 @@ class _CardSelectionScreenExampleState
       ),
       body: Column(
         children: [
+          // Your City section - selected cards
+          if (_selectedCardCounts.isNotEmpty)
+            Container(
+              color: Colors.grey.shade100,
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Your City',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      Text(
+                        '$totalCards card${totalCards != 1 ? 's' : ''}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedCardCounts.length,
+                      itemBuilder: (context, index) {
+                        final cardId = _selectedCardCounts.keys.elementAt(index);
+                        final count = _selectedCardCounts[cardId]!;
+                        final card = _allCards.firstWhere((c) => c.id == cardId);
+                        
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          width: 70,
+                          child: Stack(
+                            children: [
+                              CardDisplayWidget(
+                                card: card,
+                                isSelected: true,
+                                onTap: () => _removeCard(card),
+                              ),
+                              if (count > 1)
+                                Positioned(
+                                  top: 2,
+                                  right: 2,
+                                  child: CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.amber,
+                                    child: Text(
+                                      '$count',
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          
           // Search bar
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -590,25 +675,73 @@ class _CardSelectionScreenExampleState
                     ),
                   ],
                 ),
-                if (_selectedCardCounts.isNotEmpty)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedCardCounts.clear();
-                        _calculateScore();
-                      });
-                    },
-                    child: const Text('Clear All'),
-                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _useCarouselView ? Icons.view_carousel : Icons.grid_view,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _useCarouselView = !_useCarouselView;
+                        });
+                      },
+                      tooltip: _useCarouselView ? 'Switch to Grid' : 'Switch to Carousel',
+                    ),
+                    if (_selectedCardCounts.isNotEmpty)
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _selectedCardCounts.clear();
+                            _calculateScore();
+                          });
+                        },
+                        child: const Text('Clear All'),
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
 
           const Divider(),
 
-          // Card grid (sectioned by color)
-          Expanded(
-            child: ListView.builder(
+          // Card display (carousel or grid)
+          if (_useCarouselView)
+            _buildCarouselView(filteredCards)
+          else
+            _buildGridView(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pop(context, {
+            'selectedCardCounts': _selectedCardCounts,
+            'score': _currentScore,
+            'tokenCounts': _tokenCounts,
+            'resourceCounts': _resourceCounts,
+            'basicEvents': _basicEvents,
+            'specialEventsCount': _specialEventsCount,
+            'specialEvents': _specialEvents,
+            'journeyPoints': _journeyPoints,
+            'leftoverBerries': _leftoverBerries,
+            'leftoverResin': _leftoverResin,
+            'leftoverPebbles': _leftoverPebbles,
+            'leftoverWood': _leftoverWood,
+          });
+        },
+        label: const Text('Save Selection'),
+        icon: const Icon(Icons.check),
+      ),
+    );
+  }
+
+  Widget _buildGridView() {
+    final filteredCards = _getFilteredCards();
+    
+    return Expanded(
+      child: ListView.builder(
               itemCount: CardColor.values.length,
               itemBuilder: (context, sectionIndex) {
                 final color = CardColor.values[sectionIndex];
@@ -701,44 +834,131 @@ class _CardSelectionScreenExampleState
                 );
               },
             ),
+    );
+  }
+
+  Widget _buildCarouselView(List<EverdellCard> filteredCards) {
+    // Color filter chips
+    final colorFilterChips = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            FilterChip(
+              label: const Text('All'),
+              selected: _selectedColorFilter == null,
+              onSelected: (selected) {
+                setState(() {
+                  _selectedColorFilter = null;
+                });
+              },
+            ),
+            const SizedBox(width: 8),
+            ...CardColor.values.map((color) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilterChip(
+                  label: Text(_getColorName(color)),
+                  selected: _selectedColorFilter == color,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedColorFilter = selected ? color : null;
+                    });
+                  },
+                  backgroundColor: _getColorForType(color).withOpacity(0.2),
+                  selectedColor: _getColorForType(color),
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+    );
+
+    // Filter cards by selected color
+    final cardsToDisplay = _selectedColorFilter == null
+        ? filteredCards
+        : filteredCards.where((card) => card.cardColor == _selectedColorFilter).toList();
+
+    if (cardsToDisplay.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              colorFilterChips,
+              const SizedBox(height: 20),
+              const Text('No cards found'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Expanded(
+      child: Column(
+        children: [
+          colorFilterChips,
+          const SizedBox(height: 8),
+          Text(
+            'Swipe to browse • Tap center card to select',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+          CardCarouselWidget(
+            cards: cardsToDisplay,
+            selectedCardIds: _selectedCardCounts.keys.toSet(),
+            selectedCardCounts: _selectedCardCounts,
+            onCardTap: (card) {
+              if (card.rarity == CardRarity.unique) {
+                // Toggle selection for unique cards
+                if (_selectedCardCounts.containsKey(card.id)) {
+                  _removeCard(card);
+                } else {
+                  _addCard(card);
+                }
+              } else {
+                // For common cards, just add one
+                _addCard(card);
+              }
+            },
+            onCardAdd: (card) => _addCard(card),
+            onCardRemove: (card) => _removeCard(card),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-      Navigator.pop(context, {
-        'selectedCardCounts': _selectedCardCounts,
-        'score': _currentScore,
-        'tokenCounts': _tokenCounts,
-        'resourceCounts': _resourceCounts,
-        'basicEvents': _basicEvents,
-        'specialEventsCount': _specialEventsCount,
-        'specialEvents': _specialEvents,
-        'journeyPoints': _journeyPoints,
-            'leftoverBerries': _leftoverBerries,
-            'leftoverResin': _leftoverResin,
-            'leftoverPebbles': _leftoverPebbles,
-            'leftoverWood': _leftoverWood,
-          });
-        },
-        label: const Text('Save Selection'),
-        icon: const Icon(Icons.check),
       ),
     );
   }
 
-  String _getColorName(CardColor cardColor) {
-    switch (cardColor) {
+
+  String _getColorName(CardColor color) {
+    switch (color) {
       case CardColor.production:
-        return 'Production (Green)';
-      case CardColor.destination:
-        return 'Destination (Red)';
+        return 'Production';
       case CardColor.governance:
-        return 'Governance (Blue)';
+        return 'Governance';
+      case CardColor.destination:
+        return 'Destination';
       case CardColor.traveller:
-        return 'Traveller (Tan)';
+        return 'Traveller';
       case CardColor.prosperity:
-        return 'Prosperity (Purple)';
+        return 'Prosperity';
+    }
+  }
+
+  Color _getColorForType(CardColor color) {
+    switch (color) {
+      case CardColor.production:
+        return Colors.green;
+      case CardColor.governance:
+        return Colors.blue;
+      case CardColor.destination:
+        return Colors.red;
+      case CardColor.traveller:
+        return Colors.purple;
+      case CardColor.prosperity:
+        return Colors.amber;
     }
   }
 }

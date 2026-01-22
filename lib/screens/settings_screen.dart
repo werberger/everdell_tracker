@@ -62,6 +62,29 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           const Divider(),
+          ListTile(
+            title: const Text('Visual Card Selection Layout'),
+            subtitle: const Text('Choose how cards are displayed when selecting cards'),
+          ),
+          RadioListTile<bool>(
+            title: const Text('Table Top (Grid)'),
+            subtitle: const Text('Cards displayed in organized grid by type'),
+            value: false,
+            groupValue: settings.settings.useFanLayout,
+            onChanged: (value) {
+              if (value != null) settings.setUseFanLayout(value);
+            },
+          ),
+          RadioListTile<bool>(
+            title: const Text('Fan (Carousel)'),
+            subtitle: const Text('Cards displayed in hand-like fan with swipe navigation'),
+            value: true,
+            groupValue: settings.settings.useFanLayout,
+            onChanged: (value) {
+              if (value != null) settings.setUseFanLayout(value);
+            },
+          ),
+          const Divider(),
           SwitchListTile(
             title: const Text('Dark Mode'),
             subtitle: const Text('Use dark theme'),

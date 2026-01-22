@@ -16,7 +16,7 @@
 - Lookout - unique (2) - Copy basic or forest location
 - Monastery - unique (1) - Give 2⬮ to gain 4 pts
 - Post Office - common (2) - Give 2 cards, discard any, draw to limit
-- Scurrbble Stadium - common (2) - [extra! extra! expansion]
+- Scurrble Stadium - common (2) - [extra! extra! expansion]
 
 ### Blue (Governance)
 - Clock Tower - unique (0) - 3 pts, at season pay 1 pt to take action
@@ -43,7 +43,7 @@
 ### Purple (Prosperity)
 - Architect - unique (2) - 1 VP / ⬮ and ⬮ to 6 VP max
 - King - unique (4) - 1 VP / basic event + 2 VP / special event
-- Scurrbble Champion - common (2) - [extra! extra! expansion]
+- Scurrble Champion - common (2) - [extra! extra! expansion]
 - Wife - common (2) - 3 VP if Husband paired
 
 ### Red (Destination)

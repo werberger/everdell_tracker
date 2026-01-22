@@ -785,13 +785,13 @@
     }
   },
   {
-    "id": "scurrbble_stadium",
-    "name": "Scurrbble Stadium",
+    "id": "scurrble_stadium",
+    "name": "Scurrble Stadium",
     "type": "construction",
     "cardColor": "destination",
     "rarity": "common",
     "basePoints": 2,
-    "imagePath": "assets/images/cards/scurrbble_stadium.webp",
+    "imagePath": "assets/images/cards/scurrble_stadium.webp",
     "module": "extra",
     "hasImage": false,
     "conditionalScoring": {
@@ -813,21 +813,21 @@
     }
   },
   {
-    "id": "scurrbble_champion",
-    "name": "Scurrbble Champion",
+    "id": "scurrble_champion",
+    "name": "Scurrble Champion",
     "type": "critter",
     "cardColor": "prosperity",
     "rarity": "common",
     "basePoints": 2,
-    "imagePath": "assets/images/cards/scurrbble_champion.webp",
+    "imagePath": "assets/images/cards/scurrble_champion.webp",
     "module": "extra",
     "hasImage": false,
     "conditionalScoring": {
       "type": "cardPairing",
       "calculation": {
-        "pairedCardId": "scurrbble_champion",
+        "pairedCardId": "scurrble_champion",
         "bonusPoints": 2,
-        "note": "2 VP per other Scurrbble Champion"
+        "note": "2 VP per other Scurrble Champion"
       }
     }
   },

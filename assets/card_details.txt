@@ -236,7 +236,7 @@ Effect: 1 VP / common critter
 
 
 
-Scurbble Stadium
+Scurrble Stadium
 
 #3
 Type: common (2) ​
@@ -562,7 +562,7 @@ Effect: Pay up to 2⬮ to gain 1⬮ ​each
 
 Teacher 3 common (2) 2⬮ draw 2, keep 1, give 1
 Poe 1 legendary (4) 4⬮ discard any, draw to limit
-Scrubble Champion 3 common (2) 2⬮ 2vp / Scrubble Champion (pair with other Champions)
+Scurrble Champion 3 common (2) 2⬮ 2vp / Scurrble Champion (pair with other Champions)
 Woodcarver 3 common (2) 2⬮ pay up to 3⬮ to gain 1pt each
 Bard 2 unique (0) 3⬮ discard up to 5 cards, gain 1pt / card
 Barge Toad 3 common (1) 2⬮ gain 2⬮ for each farm

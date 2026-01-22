@@ -354,9 +354,9 @@ class _CardCarouselWidgetState extends State<CardCarouselWidget> {
       case CardColor.destination:
         return Colors.red;
       case CardColor.traveller:
-        return Colors.purple;
+        return Colors.amber; // Tan/Yellow
       case CardColor.prosperity:
-        return Colors.amber;
+        return Colors.purple;
     }
   }
 

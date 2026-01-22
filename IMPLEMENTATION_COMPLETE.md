@@ -102,8 +102,8 @@ Created `lib/utils/card_selection_helper.dart` with utilities:
 | Type | Cards | Description |
 |------|-------|-------------|
 | Resource Count | Architect (1) | 1 VP per pebble/resin (max 6) |
-| Card Type Count | Palace, Castle, Ever Tree, School, Theatre, Scurrbble Champion (6) | Count specific card types |
-| Card Pairing | Wife, Scurrbble Champion (2) | Bonus if paired card present |
+| Card Type Count | Palace, Castle, Ever Tree, School, Theatre, Scurrble Champion (6) | Count specific card types |
+| Card Pairing | Wife, Scurrble Champion (2) | Bonus if paired card present |
 | Token Placement | Clock Tower, Chapel, Shepherd (3) | Points from tokens |
 | Event Count | King (1) | Points per basic/special events |
 

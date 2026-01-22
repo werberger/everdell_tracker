@@ -207,7 +207,7 @@ If you get "type ID already registered":
 - Conditional scoring: 13 cards
   - Resource-based: 1 (Architect)
   - Card count: 6 (Palace, Castle, etc.)
-  - Pairing: 2 (Wife, Scurrbble Champion)
+  - Pairing: 2 (Wife, Scurrble Champion)
   - Token placement: 3 (Clock Tower, Chapel, Shepherd)
   - Event count: 1 (King)
 

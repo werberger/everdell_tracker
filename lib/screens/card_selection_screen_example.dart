@@ -125,16 +125,22 @@ class _CardSelectionScreenExampleState
 
   int _getCurrentCitySize() {
     int size = 0;
-    bool hasHusband = false;
-    bool hasWife = false;
+    int husbandCount = 0;
+    int wifeCount = 0;
+    int scurrbleChampionCount = 0;
 
     for (final entry in _selectedCardCounts.entries) {
       final card = _allCards.firstWhere((c) => c.id == entry.key);
       final count = entry.value;
 
-      // Check for Husband/Wife pairing
-      if (card.id == 'husband') hasHusband = true;
-      if (card.id == 'wife') hasWife = true;
+      // Track husband/wife counts for pairing
+      if (card.id == 'husband') husbandCount = count;
+      if (card.id == 'wife') wifeCount = count;
+      
+      // Track Scurrble Champions (all can share one space)
+      if (card.id == 'scurrble_champion') {
+        scurrbleChampionCount = count;
+      }
 
       // Only count cards that count toward city size
       if (card.countsTowardCitySize) {
@@ -142,9 +148,16 @@ class _CardSelectionScreenExampleState
       }
     }
 
-    // If both Husband and Wife are selected, they share 1 space
-    if (hasHusband && hasWife) {
-      size -= 1; // Reduce by 1 since they share a space
+    // Husband/Wife pairing: pairs share spaces
+    // e.g., 1 husband + 1 wife = 1 space, 2 husband + 2 wife = 2 spaces
+    if (husbandCount > 0 && wifeCount > 0) {
+      final pairs = husbandCount < wifeCount ? husbandCount : wifeCount;
+      size -= pairs; // Each pair shares a space
+    }
+    
+    // Scurrble Champions: all share one space (max reduction is count - 1)
+    if (scurrbleChampionCount > 1) {
+      size -= (scurrbleChampionCount - 1); // All champions share 1 space
     }
 
     return size;
@@ -983,9 +996,9 @@ class _CardSelectionScreenExampleState
       case CardColor.destination:
         return Colors.red;
       case CardColor.traveller:
-        return Colors.purple;
+        return Colors.amber; // Tan/Yellow
       case CardColor.prosperity:
-        return Colors.amber;
+        return Colors.purple;
     }
   }
 }

@@ -88,6 +88,7 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
             controller: widget.pointTokensController,
           ),
         // Card points based on entry method
+        // When using visual card selection, default to byColor for basic input
         if (widget.cardEntryMethod == CardEntryMethod.simple)
           _numberField(
             label: 'Construction & Critter Points',
@@ -103,7 +104,8 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
             controller: widget.critterPointsController,
           ),
         ],
-        if (widget.cardEntryMethod == CardEntryMethod.byColor) ...[
+        if (widget.cardEntryMethod == CardEntryMethod.byColor ||
+            widget.cardEntryMethod == CardEntryMethod.visual) ...[
           _numberField(
             label: 'Production (Green)',
             controller: widget.productionPointsController,
@@ -119,6 +121,7 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
           _numberField(
             label: 'Traveller (Tan)',
             controller: widget.travellerPointsController,
+            allowNegative: true,
           ),
           _numberField(
             label: 'Prosperity (Purple)',
@@ -233,13 +236,16 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
   Widget _numberField({
     required String label,
     required TextEditingController controller,
+    bool allowNegative = false,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: TextField(
         controller: controller,
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        inputFormatters: allowNegative
+            ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))]
+            : [FilteringTextInputFormatter.digitsOnly],
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),

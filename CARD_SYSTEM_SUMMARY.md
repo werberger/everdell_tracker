@@ -50,11 +50,11 @@ Most cards fall into this category - just their base point value.
 - **Palace**: 4 base + 1 VP per unique construction
 - **School**: 2 base + 1 VP per common critter
 - **Theatre**: 3 base + 1 VP per unique critter
-- **Scurrbble Champion**: 2 base + 2 VP per other Scurrbble Champion
+- **Scurrble Champion**: 2 base + 2 VP per other Scurrble Champion
 
 #### 3. **Card Pairing** (2 cards)
 - **Wife**: 2 base + 3 VP if Husband in city
-- **Scurrbble Champion**: Pairs with itself
+- **Scurrble Champion**: Pairs with itself
 
 #### 4. **Token Placement** (3 cards)
 - **Chapel**: 2 base + tokens placed during game
@@ -77,7 +77,7 @@ architect, bard, barge_toad, chip_sweep, doctor, fool, historian, husband, innke
 ## Cards Without Images (9 - Placeholders)
 
 **Extra! Extra! Module (6):**
-- carnival, gazette, scurrbble_stadium, juggler, scurrbble_champion, town_crier
+- carnival, gazette, scurrble_stadium, juggler, scurrble_champion, town_crier
 
 **Rugwort Module (3):**
 - rugwort_robber, rugwort_rowdy, rugwort_ruler

@@ -51,10 +51,10 @@ class Game extends HiveObject {
       id: json['id'],
       dateTime: DateTime.parse(json['dateTime']),
       expansionsUsed: (json['expansionsUsed'] as List)
-          .map((e) => Expansion.fromJson(e))
+          .map((e) => expansionFromJson(e as String))
           .toList(),
       players: (json['players'] as List)
-          .map((p) => PlayerScore.fromJson(p))
+          .map((p) => PlayerScore.fromJson(p as Map<String, dynamic>))
           .toList(),
       notes: json['notes'],
       winnerIds: List<String>.from(json['winnerIds']),

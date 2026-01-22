@@ -38,6 +38,10 @@ class PlayerDetailScreen extends StatelessWidget {
           _buildDateRangeChip(dateText),
           const SizedBox(height: 16),
 
+          // Entry method breakdown
+          _buildEntryMethodCard(),
+          const SizedBox(height: 16),
+
           // Key stats at a glance
           _buildKeyStatsCard(),
           const SizedBox(height: 16),
@@ -85,47 +89,132 @@ class PlayerDetailScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildEntryMethodCard() {
+    return Card(
+      color: Colors.grey.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.input, size: 20),
+                const SizedBox(width: 8),
+                const Text(
+                  'Game Entry Methods',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildEntryMethodChip(
+                    'Visual',
+                    stats.visualEntryGames,
+                    Colors.purple,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildEntryMethodChip(
+                    'Basic',
+                    stats.basicEntryGames,
+                    Colors.orange,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildEntryMethodChip(
+                    'Quick',
+                    stats.quickEntryGames,
+                    Colors.teal,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEntryMethodChip(String label, int count, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            count.toString(),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildKeyStatsCard() {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Overview',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatBox(
-                  'Games',
-                  stats.gamesPlayed.toString(),
-                  Icons.sports_esports,
-                  Colors.blue,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Overview',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatBox(
+                    'Games',
+                    stats.gamesPlayed.toString(),
+                    Icons.sports_esports,
+                    Colors.blue,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatBox(
-                  'Wins',
-                  stats.wins.toString(),
-                  Icons.emoji_events,
-                  Colors.amber,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatBox(
+                    'Wins',
+                    stats.wins.toString(),
+                    Icons.emoji_events,
+                    Colors.amber,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatBox(
-                  'Win Rate',
-                  '${(stats.winRate * 100).toStringAsFixed(0)}%',
-                  Icons.trending_up,
-                  Colors.green,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatBox(
+                    'Win Rate',
+                    '${(stats.winRate * 100).toStringAsFixed(0)}%',
+                    Icons.trending_up,
+                    Colors.green,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -165,30 +254,33 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Performance',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          _buildPerformanceRow(
-            'Average Score',
-            stats.averageScore.toStringAsFixed(1),
-            Icons.bar_chart,
-          ),
-          const Divider(height: 24),
-          _buildPerformanceRow(
-            'Highest Score',
-            stats.highestScore.toString(),
-            Icons.stars,
-          ),
-          const Divider(height: 24),
-          _buildPerformanceRow(
-            'Lowest Score',
-            stats.lowestScore.toString(),
-            Icons.arrow_downward,
-          ),
-        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Performance',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            _buildPerformanceRow(
+              'Average Score',
+              stats.averageScore.toStringAsFixed(1),
+              Icons.bar_chart,
+            ),
+            const Divider(height: 24),
+            _buildPerformanceRow(
+              'Highest Score',
+              stats.highestScore.toString(),
+              Icons.stars,
+            ),
+            const Divider(height: 24),
+            _buildPerformanceRow(
+              'Lowest Score',
+              stats.lowestScore.toString(),
+              Icons.arrow_downward,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -225,46 +317,65 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Average Scoring Breakdown',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          ...nonZeroBreakdown.map((entry) {
-            final percentage = (entry.value / stats.averageScore * 100);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        entry.key,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      Text(
-                        '${entry.value.toStringAsFixed(1)} (${percentage.toStringAsFixed(0)}%)',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  LinearProgressIndicator(
-                    value: percentage / 100,
-                    backgroundColor: Colors.grey.shade200,
-                    minHeight: 6,
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Average Scoring Breakdown',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+                borderRadius: BorderRadius.circular(4),
               ),
-            );
-          }),
-        ],
+              child: Text(
+                'Based on ${stats.detailedEntryGames} games (visual + basic entry)',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.blue.shade900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...nonZeroBreakdown.map((entry) {
+              final percentage = (entry.value / stats.averageScore * 100);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          entry.key,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          '${entry.value.toStringAsFixed(1)} (${percentage.toStringAsFixed(0)}%)',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    LinearProgressIndicator(
+                      value: percentage / 100,
+                      backgroundColor: Colors.grey.shade200,
+                      minHeight: 6,
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -275,78 +386,81 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Player Position Statistics',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          ...positions.map((position) {
-            final games = stats.positionCounts[position] ?? 0;
-            final wins = stats.positionWins[position] ?? 0;
-            final winRate = stats.getPositionWinRate(position);
-            final percentage = (games / stats.gamesPlayed * 100);
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Player Position Statistics',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...positions.map((position) {
+              final games = stats.positionCounts[position] ?? 0;
+              final wins = stats.positionWins[position] ?? 0;
+              final winRate = stats.getPositionWinRate(position);
+              final percentage = (games / stats.gamesPlayed * 100);
 
-            String positionLabel;
-            IconData icon;
-            Color color;
+              String positionLabel;
+              IconData icon;
+              Color color;
 
-            switch (position) {
-              case 1:
-                positionLabel = '1st Place';
-                icon = Icons.emoji_events;
-                color = Colors.amber;
-                break;
-              case 2:
-                positionLabel = '2nd Place';
-                icon = Icons.military_tech;
-                color = Colors.grey;
-                break;
-              case 3:
-                positionLabel = '3rd Place';
-                icon = Icons.emoji_events_outlined;
-                color = Colors.brown;
-                break;
-              default:
-                positionLabel = '${position}th Place';
-                icon = Icons.person;
-                color = Colors.blue;
-            }
+              switch (position) {
+                case 1:
+                  positionLabel = '1st Place';
+                  icon = Icons.emoji_events;
+                  color = Colors.amber;
+                  break;
+                case 2:
+                  positionLabel = '2nd Place';
+                  icon = Icons.military_tech;
+                  color = Colors.grey;
+                  break;
+                case 3:
+                  positionLabel = '3rd Place';
+                  icon = Icons.emoji_events_outlined;
+                  color = Colors.brown;
+                  break;
+                default:
+                  positionLabel = '${position}th Place';
+                  icon = Icons.person;
+                  color = Colors.blue;
+              }
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  Icon(icon, color: color, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          positionLabel,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  children: [
+                    Icon(icon, color: color, size: 24),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            positionLabel,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$games games (${percentage.toStringAsFixed(0)}%) • '
-                          '$wins wins (${(winRate * 100).toStringAsFixed(0)}% win rate)',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade700,
+                          const SizedBox(height: 4),
+                          Text(
+                            '$games games (${percentage.toStringAsFixed(0)}%) • '
+                            '$wins wins (${(winRate * 100).toStringAsFixed(0)}% win rate)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade700,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
       ),
     );
   }
@@ -355,82 +469,96 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.auto_awesome, color: Colors.purple),
-              const SizedBox(width: 8),
-              const Text(
-                'Winning Card Combinations',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Most common card combos in winning cities',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 16),
-          ...stats.winningCardCombinations.take(10).map((combo) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.purple.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.purple.shade100),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.auto_awesome, color: Colors.purple),
+                const SizedBox(width: 8),
+                const Text(
+                  'Winning Card Combinations',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.purple,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${combo.count}x',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Wrap(
-                            spacing: 4,
-                            runSpacing: 4,
-                            children: combo.cardNames.map((name) {
-                              return Chip(
-                                label: Text(
-                                  name,
-                                  style: const TextStyle(fontSize: 11),
-                                ),
-                                visualDensity: VisualDensity.compact,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Most common card combos in winning cities',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.purple.shade100,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Based on ${stats.visualEntryGames} visual entry games',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.purple.shade900,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-            );
-          }),
-        ],
+            ),
+            const SizedBox(height: 16),
+            ...stats.winningCardCombinations.take(10).map((combo) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.purple.shade100),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.purple,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${combo.count}x',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          children: combo.cardNames.map((name) {
+                            return Chip(
+                              label: Text(
+                                name,
+                                style: const TextStyle(fontSize: 11),
+                              ),
+                              visualDensity: VisualDensity.compact,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ],
+        ),
       ),
     );
   }
@@ -439,66 +567,85 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.favorite, color: Colors.red),
-              const SizedBox(width: 8),
-              const Text(
-                'Most Used Cards',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.favorite, color: Colors.red),
+                const SizedBox(width: 8),
+                const Text(
+                  'Most Used Cards',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Cards you play most often',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade100,
+                borderRadius: BorderRadius.circular(4),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Cards you play most often',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          ),
-          const SizedBox(height: 16),
-          ...stats.mostUsedCards.take(15).map((cardStat) {
-            final percentage =
-                (cardStat.count / stats.gamesPlayed * 100).toStringAsFixed(0);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade100,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${cardStat.count}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red.shade700,
+              child: Text(
+                'Based on ${stats.visualEntryGames} visual entry games',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.red.shade900,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...stats.mostUsedCards.take(15).map((cardStat) {
+              final percentage =
+                  (cardStat.count / stats.visualEntryGames * 100).toStringAsFixed(0);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${cardStat.count}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      cardStat.cardName,
-                      style: const TextStyle(fontSize: 14),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        cardStat.cardName,
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                  Text(
-                    '$percentage%',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                    Text(
+                      '$percentage%',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
       ),
     );
   }
@@ -507,37 +654,40 @@ class PlayerDetailScreen extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Expansions Played',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          ...stats.expansionCounts.entries.map((entry) {
-            final percentage =
-                (entry.value / stats.gamesPlayed * 100).toStringAsFixed(0);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      entry.key,
-                      style: const TextStyle(fontSize: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Expansions Played',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...stats.expansionCounts.entries.map((entry) {
+              final percentage =
+                  (entry.value / stats.gamesPlayed * 100).toStringAsFixed(0);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.key,
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${entry.value} games ($percentage%)',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      '${entry.value} games ($percentage%)',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+                  ],
+                ),
+              );
+            }).toList(),
+          ],
+        ),
       ),
     );
   }

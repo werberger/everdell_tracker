@@ -138,87 +138,90 @@ class _StatsScreenState extends State<StatsScreen> {
       color: Colors.blue.shade50,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        children: [
-          Row(
-            children: [
-              Icon(Icons.public, color: Colors.blue.shade700),
-              const SizedBox(width: 8),
-              const Text(
-                'Overall Statistics',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOverallStatItem(
-                  'Total Games',
-                  totalGames.toString(),
-                  Icons.games,
-                  Colors.blue,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildOverallStatItem(
-                  'Players',
-                  totalPlayers.toString(),
-                  Icons.people,
-                  Colors.green,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: _buildOverallStatItem(
-                  'Avg Score',
-                  avgScore.toStringAsFixed(1),
-                  Icons.trending_up,
-                  Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildOverallStatItem(
-                  'High Score',
-                  highestScore.toString(),
-                  Icons.star,
-                  Colors.amber,
-                ),
-              ),
-            ],
-          ),
-          if (highestScorer.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.emoji_events, color: Colors.amber),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Highest scoring player: $highestScorer ($highestScore pts)',
-                      style: const TextStyle(fontSize: 12),
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.public, color: Colors.blue.shade700),
+                const SizedBox(width: 8),
+                const Text(
+                  'Overall Statistics',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOverallStatItem(
+                    'Total Games',
+                    totalGames.toString(),
+                    Icons.games,
+                    Colors.blue,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildOverallStatItem(
+                    'Players',
+                    totalPlayers.toString(),
+                    Icons.people,
+                    Colors.green,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildOverallStatItem(
+                    'Avg Score',
+                    avgScore.toStringAsFixed(1),
+                    Icons.trending_up,
+                    Colors.orange,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildOverallStatItem(
+                    'High Score',
+                    highestScore.toString(),
+                    Icons.star,
+                    Colors.amber,
+                  ),
+                ),
+              ],
+            ),
+            if (highestScorer.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.amber.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.emoji_events, color: Colors.amber),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Highest scoring player: $highestScorer ($highestScore pts)',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

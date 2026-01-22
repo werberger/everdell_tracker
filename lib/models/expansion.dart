@@ -38,8 +38,9 @@ extension ExpansionLabel on Expansion {
 
   // JSON serialization
   String toJson() => name;
+}
 
-  static Expansion fromJson(String json) {
-    return Expansion.values.firstWhere((e) => e.name == json);
-  }
+// Helper function for JSON deserialization
+Expansion expansionFromJson(String json) {
+  return Expansion.values.firstWhere((e) => e.name == json);
 }

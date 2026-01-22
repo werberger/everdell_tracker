@@ -37,6 +37,10 @@ class PlayerStats {
   final Map<int, int> positionWins;
   final List<CardCombination> winningCardCombinations;
   final List<CardUsageStat> mostUsedCards;
+  // Game entry method counts
+  final int visualEntryGames;
+  final int basicEntryGames;
+  final int quickEntryGames;
 
   const PlayerStats({
     required this.playerName,
@@ -52,6 +56,9 @@ class PlayerStats {
     required this.positionWins,
     required this.winningCardCombinations,
     required this.mostUsedCards,
+    required this.visualEntryGames,
+    required this.basicEntryGames,
+    required this.quickEntryGames,
   });
 
   double getPositionWinRate(int position) {
@@ -60,6 +67,8 @@ class PlayerStats {
     final wins = positionWins[position] ?? 0;
     return wins / games;
   }
+
+  int get detailedEntryGames => visualEntryGames + basicEntryGames;
 }
 
 class StatsService {
@@ -117,6 +126,22 @@ class StatsService {
 
     final averages = _averageBreakdown(playerScores);
 
+    // Count entry method types
+    int visualEntryGames = 0;
+    int basicEntryGames = 0;
+    int quickEntryGames = 0;
+
+    for (final score in playerScores) {
+      if (score.isQuickEntry) {
+        quickEntryGames++;
+      } else if (score.selectedCardIds != null &&
+          score.selectedCardIds!.isNotEmpty) {
+        visualEntryGames++;
+      } else {
+        basicEntryGames++;
+      }
+    }
+
     // Calculate card statistics
     final cardCombinations = _calculateWinningCombinations(
       playerName: playerName,
@@ -173,6 +198,9 @@ class StatsService {
       positionWins: positionWins,
       winningCardCombinations: cardCombinations,
       mostUsedCards: cardUsage,
+      visualEntryGames: visualEntryGames,
+      basicEntryGames: basicEntryGames,
+      quickEntryGames: quickEntryGames,
     );
   }
 

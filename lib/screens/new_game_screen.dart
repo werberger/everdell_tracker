@@ -4,11 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/expansion.dart';
+import '../models/everdell_card.dart';
 import '../models/game.dart';
 import '../models/player_score.dart';
 import '../providers/game_provider.dart';
 import '../providers/player_provider.dart';
 import '../providers/settings_provider.dart';
+import '../screens/card_selection_screen_example.dart';
+import '../services/card_service.dart';
 import '../utils/score_calculator.dart';
 import '../widgets/expansion_selector.dart';
 import '../widgets/player_input_card.dart';
@@ -66,8 +69,68 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
   void _addPlayer() {
     setState(() {
-      _players.add(_PlayerEntry(id: _uuid.v4()));
+      _players.add(_PlayerEntry(id: _uuid.v4())..entryMethod = 'visual'); // Default to visual
     });
+  }
+
+  Future<void> _selectCardsForPlayer(_PlayerEntry entry) async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardSelectionScreenExample(
+          initialCardCounts: entry.selectedCardCounts,
+          initialTokenCounts: entry.cardTokenCounts,
+          initialResourceCounts: entry.cardResourceCounts,
+          initialBasicEvents: int.tryParse(entry.basicEventsController.text),
+          initialSpecialEventsCount: int.tryParse(entry.specialEventsCountController.text),
+          initialSpecialEvents: int.tryParse(entry.specialEventsController.text),
+          initialJourneyPoints: int.tryParse(entry.journeyPointsController.text),
+          leftoverPebbles: int.tryParse(entry.pebblesController.text),
+          leftoverResin: int.tryParse(entry.resinController.text),
+          leftoverBerries: int.tryParse(entry.berriesController.text),
+          leftoverWood: int.tryParse(entry.woodController.text),
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        entry.selectedCardCounts = Map<String, int>.from(result['selectedCardCounts'] ?? {});
+        entry.cardTokenCounts = Map<String, int>.from(result['tokenCounts'] ?? {});
+        entry.cardResourceCounts = Map<String, int>.from(result['resourceCounts'] ?? {});
+        entry.visualScore = result['score'] as int?;
+        
+        // Calculate base card score (without events/journey/dynamic bonuses for dynamic recalculation)
+        final basicEvents = (result['basicEvents'] as int?) ?? 0;
+        final specialEventsCount = (result['specialEventsCount'] as int?) ?? 0;
+        final specialEventsPoints = (result['specialEvents'] as int?) ?? 0;
+        final journey = (result['journeyPoints'] as int?) ?? 0;
+        
+        // Remove events and journey from the stored score
+        int baseScore = (entry.visualScore ?? 0) - (basicEvents * 3) - specialEventsPoints - journey;
+        
+        // Also remove King and Architect bonuses if they were included
+        if (entry.selectedCardCounts?.containsKey('king') == true) {
+          baseScore -= (basicEvents * 1) + (specialEventsCount * 2);
+        }
+        
+        if (entry.selectedCardCounts?.containsKey('architect') == true) {
+          final pebbles = int.tryParse(entry.pebblesController.text) ?? 0;
+          final resin = int.tryParse(entry.resinController.text) ?? 0;
+          final architectBonus = (pebbles + resin).clamp(0, 6);
+          baseScore -= architectBonus;
+        }
+        
+        entry.visualCardScore = baseScore;
+        
+        // Update text controllers with data from card selection
+        entry.pointTokensController.text = '0'; // Reset point tokens for visual mode
+        entry.basicEventsController.text = basicEvents.toString();
+        entry.specialEventsCountController.text = specialEventsCount.toString();
+        entry.specialEventsController.text = specialEventsPoints.toString();
+        entry.journeyPointsController.text = journey.toString();
+      });
+    }
   }
 
   void _removePlayer(_PlayerEntry entry) {
@@ -82,12 +145,24 @@ class _NewGameScreenState extends State<NewGameScreen> {
     _PlayerEntry entry,
     bool autoConvertResources,
   ) {
-    if (entry.isQuickEntry && entry.quickTotal == null) {
+    if (entry.entryMethod == 'quick' && entry.quickTotal == null) {
       return null;
     }
+    
+    // Calculate other players' event counts for Rugwort
+    int otherPlayersEventCount = 0;
+    for (final otherEntry in _players) {
+      if (otherEntry.id != entry.id) {
+        final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
+        final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
+        otherPlayersEventCount += basicEvents + specialEventsCount;
+      }
+    }
+    
     final score = entry.buildScore(
       autoConvertResources: autoConvertResources,
       isWinner: false,
+      otherPlayersEventCount: otherPlayersEventCount,
     );
     return score.totalScore;
   }
@@ -108,10 +183,22 @@ class _NewGameScreenState extends State<NewGameScreen> {
         _showSnack('Enter a total score for each quick entry player.');
         return;
       }
+      
+      // Calculate other players' event counts for Rugwort
+      int otherPlayersEventCount = 0;
+      for (final otherEntry in _players) {
+        if (otherEntry.id != entry.id) {
+          final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
+          final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
+          otherPlayersEventCount += basicEvents + specialEventsCount;
+        }
+      }
+      
       scores.add(
         entry.buildScore(
           autoConvertResources: settings.autoConvertResources,
           isWinner: false,
+          otherPlayersEventCount: otherPlayersEventCount,
         ),
       );
     }
@@ -211,14 +298,26 @@ class _NewGameScreenState extends State<NewGameScreen> {
         _showSnack('Each player needs a name.');
         return;
       }
-      if (entry.isQuickEntry && entry.quickTotal == null) {
+      if (entry.entryMethod == 'quick' && entry.quickTotal == null) {
         _showSnack('Enter a total score for each quick entry player.');
         return;
       }
+      
+      // Calculate other players' event counts for Rugwort
+      int otherPlayersEventCount = 0;
+      for (final otherEntry in _players) {
+        if (otherEntry.id != entry.id && otherEntry.nameController.text.trim().isNotEmpty) {
+          final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
+          final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
+          otherPlayersEventCount += basicEvents + specialEventsCount;
+        }
+      }
+      
       scores.add(
         entry.buildScore(
           autoConvertResources: settings.autoConvertResources,
           isWinner: _winnerIds.contains(entry.id),
+          otherPlayersEventCount: otherPlayersEventCount,
         ),
       );
     }
@@ -389,13 +488,21 @@ class _NewGameScreenState extends State<NewGameScreen> {
               index: _players.indexOf(entry),
               nameController: entry.nameController,
               playerSuggestions: playerNames,
-              isQuickEntry: entry.isQuickEntry,
+              isQuickEntry: entry.entryMethod == 'quick',
               onQuickEntryChanged: (value) {
                 setState(() {
-                  entry.isQuickEntry = value;
+                  entry.entryMethod = value ? 'quick' : 'visual';
                 });
               },
               totalController: entry.totalController,
+              entryMethod: entry.entryMethod,
+              onEntryMethodChanged: (value) {
+                setState(() {
+                  entry.entryMethod = value;
+                });
+              },
+              selectedCardCounts: entry.selectedCardCounts,
+              onSelectCards: () => _selectCardsForPlayer(entry),
               separatePointTokens: settings.separatePointTokens,
               autoConvertResources: settings.autoConvertResources,
               cardEntryMethod: settings.cardEntryMethod,
@@ -412,6 +519,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
                   entry.prosperityCardPointsController,
               basicEventsController: entry.basicEventsController,
               specialEventsController: entry.specialEventsController,
+              specialEventsCountController: entry.specialEventsCountController,
               prosperityPointsController: entry.prosperityPointsController,
               journeyPointsController: entry.journeyPointsController,
               berriesController: entry.berriesController,
@@ -477,6 +585,7 @@ class _PlayerEntry {
   final TextEditingController cardPointsController = TextEditingController();
   final TextEditingController basicEventsController = TextEditingController();
   final TextEditingController specialEventsController = TextEditingController();
+  final TextEditingController specialEventsCountController = TextEditingController();
   final TextEditingController prosperityPointsController =
       TextEditingController();
   final TextEditingController journeyPointsController = TextEditingController();
@@ -506,21 +615,47 @@ class _PlayerEntry {
       TextEditingController();
 
   bool isQuickEntry = false;
+  String entryMethod = 'visual'; // 'visual', 'basic', or 'quick'
+  
+  // Card selection data
+  Map<String, int>? selectedCardCounts;
+  Map<String, int>? cardTokenCounts;
+  Map<String, int>? cardResourceCounts;
+  int? visualCardScore; // Store the base card score (without events/journey)
+  int? visualScore; // Store the total calculated score from card selection
 
   _PlayerEntry({required this.id});
 
   factory _PlayerEntry.fromScore(PlayerScore score) {
     final entry = _PlayerEntry(id: score.playerId)
       ..nameController.text = score.playerName
-      ..isQuickEntry = score.isQuickEntry;
+      ..isQuickEntry = score.isQuickEntry
+      ..selectedCardCounts = score.selectedCardIds != null 
+          ? {for (var id in score.selectedCardIds!) id: 1} // Simplified for now
+          : null
+      ..cardTokenCounts = score.cardTokenCounts
+      ..cardResourceCounts = score.cardResourceCounts;
 
+    // Determine entry method
     if (score.isQuickEntry) {
+      entry.entryMethod = 'quick';
       entry.totalController.text = score.totalScore.toString();
+    } else if (score.selectedCardIds != null && score.selectedCardIds!.isNotEmpty) {
+      entry.entryMethod = 'visual';
+      // Populate fields from card selection data
+      entry.basicEventsController.text = _toText(score.basicEvents);
+      entry.specialEventsController.text = _toText(score.specialEvents);
+      entry.journeyPointsController.text = _toText(score.journeyPoints);
     } else {
+      entry.entryMethod = 'basic';
+    }
+
+    if (!score.isQuickEntry && score.selectedCardIds == null) {
       entry.pointTokensController.text = _toText(score.pointTokens);
       entry.cardPointsController.text = _toText(score.cardPoints);
       entry.basicEventsController.text = _toText(score.basicEvents);
       entry.specialEventsController.text = _toText(score.specialEvents);
+      entry.specialEventsCountController.text = '0'; // Default for old data
       entry.prosperityPointsController.text = _toText(score.prosperityPoints);
       entry.journeyPointsController.text = _toText(score.journeyPoints);
       entry.berriesController.text = _toText(score.leftoverBerries);
@@ -555,6 +690,7 @@ class _PlayerEntry {
   PlayerScore buildScore({
     required bool autoConvertResources,
     required bool isWinner,
+    int otherPlayersEventCount = 0,
   }) {
     final tiebreakerResources = _resourceTotal();
     final baseScore = PlayerScore(
@@ -578,7 +714,7 @@ class _PlayerEntry {
       totalScore: 0,
       tiebreakerResources: tiebreakerResources,
       isWinner: false,
-      isQuickEntry: isQuickEntry,
+      isQuickEntry: entryMethod == 'quick',
       constructionPoints: _parse(constructionPointsController),
       critterPoints: _parse(critterPointsController),
       productionPoints: _parse(productionPointsController),
@@ -586,14 +722,26 @@ class _PlayerEntry {
       governancePoints: _parse(governancePointsController),
       travellerPoints: _parse(travellerPointsController),
       prosperityCardPoints: _parse(prosperityCardPointsController),
+      // Card selection data
+      selectedCardIds: selectedCardCounts != null 
+          ? selectedCardCounts!.keys.toList()
+          : null,
+      cardTokenCounts: cardTokenCounts,
+      cardResourceCounts: cardResourceCounts,
     );
 
-    final total = isQuickEntry
-        ? (quickTotal ?? 0)
-        : ScoreCalculator.calculateTotal(
-            score: baseScore,
-            autoConvertResources: autoConvertResources,
-          );
+    int total;
+    if (entryMethod == 'quick') {
+      total = quickTotal ?? 0;
+    } else if (entryMethod == 'visual' && selectedCardCounts != null) {
+      // Dynamically recalculate from selected cards with current inputs
+      total = _calculateVisualScoreSync(otherPlayersEventCount: otherPlayersEventCount);
+    } else {
+      total = ScoreCalculator.calculateTotal(
+        score: baseScore,
+        autoConvertResources: autoConvertResources,
+      );
+    }
 
     return PlayerScore(
       playerId: baseScore.playerId,
@@ -616,7 +764,7 @@ class _PlayerEntry {
       totalScore: total,
       tiebreakerResources: baseScore.tiebreakerResources,
       isWinner: isWinner,
-      isQuickEntry: isQuickEntry,
+      isQuickEntry: entryMethod == 'quick',
       playerOrder: _parse(playerOrderController),
       startingCards: _parse(startingCardsController),
       constructionPoints: baseScore.constructionPoints,
@@ -641,6 +789,65 @@ class _PlayerEntry {
         (_parse(woodController) ?? 0);
   }
 
+  int _calculateVisualScoreSync({int otherPlayersEventCount = 0}) {
+    if (selectedCardCounts == null || selectedCardCounts!.isEmpty) {
+      // No cards selected, just return events + journey
+      final pointTokens = _parse(pointTokensController) ?? 0;
+      final basicEvents = _parse(basicEventsController) ?? 0;
+      final specialEventsPoints = _parse(specialEventsController) ?? 0;
+      final journey = _parse(journeyPointsController) ?? 0;
+      return pointTokens + (basicEvents * 3) + specialEventsPoints + journey;
+    }
+
+    // We need to load cards synchronously - this is a workaround
+    // In a real scenario, we'd need to cache the loaded cards
+    // For now, use the stored visualCardScore as base and recalculate bonuses
+    
+    int total = 0;
+    
+    // Calculate base card points (without conditional bonuses)
+    // This is imperfect but works for the MVP
+    // TODO: Cache loaded EverdellCard objects for proper calculation
+    
+    // For now, use a simplified calculation
+    final pointTokens = _parse(pointTokensController) ?? 0;
+    final basicEvents = _parse(basicEventsController) ?? 0;
+    final specialEventsCount = _parse(specialEventsCountController) ?? 0;
+    final specialEventsPoints = _parse(specialEventsController) ?? 0;
+    final journey = _parse(journeyPointsController) ?? 0;
+    
+    // Add events and journey
+    total += pointTokens + (basicEvents * 3) + specialEventsPoints + journey;
+    
+    // Add base card points from visualCardScore
+    if (visualCardScore != null) {
+      total += visualCardScore!;
+    }
+    
+    // Add dynamic conditional bonuses that depend on current inputs
+    if (selectedCardCounts!.containsKey('king')) {
+      // King: 1 per basic event, 2 per special event count
+      total += basicEvents * 1;
+      total += specialEventsCount * 2;
+    }
+    
+    if (selectedCardCounts!.containsKey('architect')) {
+      // Architect: 1 per pebble/resin (max 6)
+      final pebbles = _parse(pebblesController) ?? 0;
+      final resin = _parse(resinController) ?? 0;
+      final architectBonus = (pebbles + resin).clamp(0, 6);
+      total += architectBonus;
+    }
+    
+    if (selectedCardCounts!.containsKey('rugwort_ruler')) {
+      // Rugwort the Ruler: 1 per event (basic + special count) OTHER players achieved
+      total += otherPlayersEventCount;
+    }
+    
+    return total;
+  }
+
+
   void dispose() {
     nameController.dispose();
     totalController.dispose();
@@ -648,6 +855,7 @@ class _PlayerEntry {
     cardPointsController.dispose();
     basicEventsController.dispose();
     specialEventsController.dispose();
+    specialEventsCountController.dispose();
     prosperityPointsController.dispose();
     journeyPointsController.dispose();
     berriesController.dispose();

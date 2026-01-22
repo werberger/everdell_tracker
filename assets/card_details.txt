@@ -1,0 +1,580 @@
+Here is the detailed list of all cards:
+Construction:
+
+
+Carnival
+
+#2
+Type: unique (1) ​
+Cost: 2⬮/1⬮
+Effect: Draw 1 / green or gain 1⬮ / 2 green
+
+
+
+Castle
+
+#2
+Type: unique (4)
+Cost: 2⬮/3⬮/2⬮
+Effect: 1 VP / common construction
+
+
+
+Cemetery
+
+#2
+Type: unique (0) ​
+Cost: 2⬮ ​
+Effect: Reveal 4 cards, play 1 free
+
+
+
+Chapel
+
+#2
+Type: unique (2) ​
+Cost: 2⬮/1⬮/1⬮ ​
+Effect: Place 1pt + draw 2 cards / pt ​
+
+
+
+Clock Tower
+
+#3
+Type: unique (0) ​
+Cost: 3⬮/1⬮
+Effect: 3 pts, at season pay 1 pt to take action ​
+
+
+
+Courthouse
+
+#2
+Type: unique (2) ​
+Cost: 1⬮/1⬮/2⬮
+Effect: Gain 1⬮, 1⬮, or 1⬮ after construction ​
+
+
+
+Crane
+
+#3
+Type: unique (1) ​
+Cost: 1⬮
+Effect: Discard to play construct for 3⬮ less ​
+
+
+
+Bridge of the Sky ​
+
+#1
+Type: legendary (*) ​
+Cost: 2⬮ ​
+Effect: Pair 1 construction for 3⬮ less (paired pts at end) ​
+
+
+
+Dungeon
+
+#2
+Type: unique (0) ​
+Cost: 1⬮/2⬮
+Effect: Play card for 3⬮ less when critter locked ​
+
+
+
+Ever Tree
+
+#2
+Type: unique (5)
+Cost: 3⬮/3⬮/3⬮
+Effect: 1 VP / prosperity card ​
+
+
+
+Fairgrounds
+
+#3
+Type: unique (3) ​
+Cost: 1⬮/2⬮/1⬮
+Effect: Draw 2 cards ​
+
+
+
+Farm
+
+#8
+Type: common (1) ​
+Cost: 2⬮/1⬮
+Effect: Gain 1⬮ ​
+
+
+
+McGregor's Market ​
+
+#1
+Type: legendary (4) ​
+Cost: 2⬮/2⬮/1⬮
+Effect: Gain 2⬮ ​
+
+
+
+Gazette
+
+#2
+Type: unique (3) ​
+Cost: 2⬮/2⬮ ​
+Effect: Place 1pt / gained event, if >2pts gain 3pts at end ​
+
+
+
+General Store
+
+#3
+Type: common (1) ​
+Cost: 1⬮/1⬮
+Effect: 1⬮ + 1⬮ if Farm
+
+
+
+Inn
+
+#3
+Type: common (2) ​
+Cost: 2⬮/1⬮
+Effect: Play meadow card for 3⬮ less ​
+
+
+
+The Green Acorn ​
+
+#1
+Type: legendary (4) ​
+Cost: 3⬮/3⬮
+Effect: Play card for 4⬮ less ​
+
+
+
+Lookout
+
+#2
+Type: unique (2) ​
+Cost: 1⬮/1⬮/1⬮
+Effect: Copy basic or forest location ​
+
+
+
+Mine
+
+#3
+Type: common (2) ​
+Cost: 1⬮/1⬮/1⬮
+Effect: Gain 1⬮ ​
+
+
+
+Monastery
+
+#2
+Type: unique (1) ​
+Cost: 1⬮/1⬮/1⬮
+Effect: Give 2⬮ to gain 4 pts ​
+
+
+
+Palace
+
+#2
+Type: unique (4)
+Cost: 2⬮/3⬮/3⬮
+Effect: 1 VP / unique construction ​
+
+
+
+Post Office
+
+#3
+Type: common (2) ​
+Cost: 1⬮/2⬮
+Effect: Give 2 cards, discard any, draw to limit ​
+
+
+
+Resin Refinery
+
+#3
+Type: common (1) ​
+Cost: 1⬮/1⬮
+Effect: Gain 1⬮ ​
+
+
+
+Ruins
+
+#3
+Type: common (0) ​
+Cost: -
+Effect: Discard city construction, refund + draw 2 ​
+
+
+
+Silver Scale Spring
+
+#1
+Type: legendary (2)
+Cost: 1⬮
+Effect: Play under construction, refund + draw 2
+
+
+
+School
+
+#2
+Type: unique (2) ​
+Cost: 2⬮/2⬮ ​
+Effect: 1 VP / common critter
+
+
+
+Scurbble Stadium
+
+#3
+Type: common (2) ​
+Cost: 1⬮/1⬮/1⬮
+Effect: Name color, draw 4, gain 3pts if matched ​
+
+
+
+Storehouse
+
+#3
+Type: common (2) ​
+Cost: 1⬮/1⬮/1⬮
+Effect: Place 3⬮, 2⬮, 1⬮, or 2⬮, take all ⬮
+
+
+
+Theatre
+
+#2
+Type: unique (3) ​
+Cost: 3⬮/1⬮/1⬮
+Effect: 1 VP / unique critter ​
+
+
+
+Oleander's Opera ​
+
+#1
+Type: legendary (4) ​
+Cost: 3⬮/3⬮/2⬮ ​
+Effect: 2VP/unique critter
+
+
+Certainly! Continuing from Twig Barge and including all the critters:
+
+Construction:
+
+
+Twig Barge
+
+#3
+Type: common (1) ​
+Cost: 1⬮/1⬮
+Effect: Gain 2⬮ ​
+
+
+
+University
+
+#2
+Type: unique (3) ​
+Cost: 1⬮/2⬮
+Effect: Discard city card, refund, gain 1⬮ + 1pt
+
+
+
+Bridge
+
+#2
+Type: unique (1) ​
+Cost: 2⬮/1⬮
+Effect: For each ⬮ +1 to hand, draw 2 cards when ⬮ gained ​
+
+
+
+Ferry
+
+#3
+Type: unique (2) ​
+Cost: 2⬮/2⬮ ​
+Effect: Copy revealed river destination ​
+
+
+
+Harbor
+
+#2
+Type: unique (3) ​
+Cost: 3⬮/1⬮/1⬮
+Effect: Have at least 2⬮, then gain 2⬮ ​
+
+
+
+Pirate Ship
+
+#3
+Type: common (0) ​
+Cost: -
+Effect: Move to oppo city, gain 1⬮ + 1pt / oppo ⬮ ​
+
+
+
+
+Critters:
+
+
+Juggler
+
+#3
+Type: common (0) ​
+Cost: 2⬮ ​
+Effect: Pay 4⬮ to gain 4pts or reveal cards, if >5pts gain 6pts ​
+
+
+
+King
+
+#2
+Type: unique (4)
+Cost: 6⬮
+Effect: 1 VP / basic event + 2 VP / special event ​
+
+
+
+Fynn Nobletail
+
+#1
+Type: legendary (5) ​
+Cost: 7⬮
+Effect: 2 VP / basic event + 3 VP / special event
+
+
+
+Undertaker
+
+#2
+Type: unique (1) ​
+Cost: 2⬮ ​
+Effect: Discard 3 meadow, replenish, draw 1
+
+
+
+Shepherd
+
+#2
+Type: unique (1) ​
+Cost: 3⬮ (to oppo) ​
+Effect: Gain 3⬮ + 1 pt / Chapel pt ​
+
+
+
+Historian
+
+#3
+Type: unique (1) ​
+Cost: 2⬮ ​
+Effect: Draw 1 when critter or construction played ​
+
+
+
+Foresight
+
+#1
+Type: legendary (4) ​
+Cost: 4⬮ ​
+Effect: Draw 2 / critter or gain 1⬮ / construction played ​
+
+
+
+Judge
+
+#2
+Type: unique (2) ​
+Cost: 3⬮ ​
+Effect: Replace 1⬮ when critter or construction played ​
+
+
+
+Architect
+
+#2
+Type: unique (2) ​
+Cost: 4⬮ ​
+Effect: 1 VP / ⬮ and ⬮ to 6 VP max ​
+
+
+
+Ranger
+
+#2
+Type: unique (1) ​
+Cost: 2⬮ ​
+Effect: Move worker, unlock 2nd cell ​
+
+
+
+Fool
+
+#2
+Type: unique (-2)
+Cost: 3⬮ ​
+Effect: Play to oppo city ​
+
+
+
+Wife
+
+#4
+Type: common (2) ​
+Cost: 2⬮ ​
+Effect: 3 VP if Husband paired ​
+
+
+
+Husband
+
+#4
+Type: common (2) ​
+Cost: 3⬮ ​
+Effect: Gain 1⬮ if Wife paired and Farm ​
+
+
+
+Town Crier
+
+#2
+Type: unique (2) ​
+Cost: 2⬮ ​
+Effect: May give 2 cards to oppo, then gain 3pts ​
+
+
+
+Shopkeeper
+
+#3
+Type: unique (1) ​
+Cost: 2⬮ ​
+Effect: Gain 1⬮ after critter played in your city ​
+
+
+
+Innkeeper
+
+#3
+Type: unique (1) ​
+Cost: 1⬮
+Effect: Discard to play critter for 3⬮ less ​
+
+
+
+Wanderer
+
+#3
+Type: common (1) ​
+Cost: 2⬮ ​
+Effect: Draw 3 cards
+
+
+
+Miner Mole
+
+#3
+Type: common (1) ​
+Cost: 3⬮ ​
+Effect: Copy 1 production in oppo city ​
+
+
+
+Monk
+
+#2
+Type: unique (0) ​
+Cost: 1⬮
+Effect: Give up to 2⬮ to gain 2 pts each ​
+
+
+
+Queen
+
+#2
+Type: unique (4)
+Cost: 5⬮
+Effect: Play card up to value 3 for free ​
+
+
+
+Amilla Glistendew
+
+#1
+Type: legendary (5) ​
+Cost: 6⬮
+Effect: Achieve event without cost
+
+
+
+Postal Pigeon
+
+#3
+Type: common (0) ​
+Cost: 2⬮ ​
+Effect: Reveal 2 cards, play 1 up to value 3 for free ​
+
+
+
+Cirrus Windfall
+
+#1
+Type: legendary (4) ​
+Cost: 4⬮ ​
+Effect: Play card up to value 3 for free ​
+
+
+
+Chip Sweep
+
+#3
+Type: common (2) ​
+Cost: 3⬮ ​
+Effect: Activate 1 production in your city ​
+
+
+
+Peddler
+
+#3
+Type: common (1) ​
+Cost: 2⬮ ​
+Effect: Pay up to 2⬮ to gain 1⬮ ​each
+
+
+
+
+Teacher 3 common (2) 2⬮ draw 2, keep 1, give 1
+Poe 1 legendary (4) 4⬮ discard any, draw to limit
+Scrubble Champion 3 common (2) 2⬮ 2vp / Scrubble Champion (pair with other Champions)
+Woodcarver 3 common (2) 2⬮ pay up to 3⬮ to gain 1pt each
+Bard 2 unique (0) 3⬮ discard up to 5 cards, gain 1pt / card
+Barge Toad 3 common (1) 2⬮ gain 2⬮ for each farm
+Doctor 2 unique (4) 4⬮ pay up to 3⬮ to gain 1pt each
+Messenger 3 common (0) 2⬮ draw 1 card + gain 1pt (construction paired, color shared)
+Ferry Ferret 2 unique (1) 3⬮ have at least 2⬮, then gain 2pts
+Shipwright 2 unique (2) 4⬮ 1vp / Pearlbrook card in city
+Pirate 3 common (1) 3⬮ discard up to 4, reveal equal, if >6pts, gain 1⬮
+Rugwort the Rowdy 1 unique (0) 3⬮ trade Rugwort for free green from oppo, discard 2
+Rugwort the Rowdy 1 unique (0) 2⬮ swap hands with oppo
+Rugwort the Rowdy 1 unique (2) 4⬮ 1vp / event by 1 oppo
+
+
+
+

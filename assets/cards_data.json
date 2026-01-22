@@ -1,0 +1,891 @@
+[
+  {
+    "id": "architect",
+    "name": "Architect",
+    "type": "critter",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/architect.webp",
+    "pairedWith": "university",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "resourceCount",
+      "userPrompt": "How many pebbles and resin do you have left?",
+      "calculation": {
+        "pointsPerResource": 1,
+        "maxBonus": 6,
+        "resources": ["pebbles", "resin"]
+      }
+    }
+  },
+  {
+    "id": "bard",
+    "name": "Bard",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/bard.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "barge_toad",
+    "name": "Barge Toad",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/barge_toad.webp",
+    "pairedWith": "twig_barge",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "castle",
+    "name": "Castle",
+    "type": "construction",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 4,
+    "imagePath": "assets/images/cards/castle.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "cardTypeCount",
+      "userPrompt": "Castle automatically counts common constructions",
+      "calculation": {
+        "countType": "common_constructions",
+        "pointsPerCard": 1
+      }
+    }
+  },
+  {
+    "id": "cemetery",
+    "name": "Cemetery",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/cemetery.webp",
+    "pairedWith": "undertaker",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "chapel",
+    "name": "Chapel",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/chapel.webp",
+    "pairedWith": "shepherd",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "tokenPlacement",
+      "userPrompt": "How many point tokens are on Chapel?",
+      "calculation": {
+        "directPoints": true
+      }
+    }
+  },
+  {
+    "id": "chip_sweep",
+    "name": "Chip Sweep",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/chip_sweep.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "clock_tower",
+    "name": "Clock Tower",
+    "type": "construction",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/clock_tower.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "tokenPlacement",
+      "userPrompt": "How many point tokens remain on Clock Tower?",
+      "calculation": {
+        "directPoints": true,
+        "startingTokens": 3
+      }
+    }
+  },
+  {
+    "id": "courthouse",
+    "name": "Courthouse",
+    "type": "construction",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/courthouse.webp",
+    "pairedWith": "judge",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "crane",
+    "name": "Crane",
+    "type": "construction",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/crane.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "doctor",
+    "name": "Doctor",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 4,
+    "imagePath": "assets/images/cards/doctor.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "dungeon",
+    "name": "Dungeon",
+    "type": "construction",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/dungeon.webp",
+    "pairedWith": "ranger",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "ever_tree",
+    "name": "Ever Tree",
+    "type": "construction",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 5,
+    "imagePath": "assets/images/cards/ever_tree.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "cardTypeCount",
+      "userPrompt": "Ever Tree automatically counts prosperity cards",
+      "calculation": {
+        "countType": "prosperity_cards",
+        "pointsPerCard": 1
+      }
+    }
+  },
+  {
+    "id": "fairgrounds",
+    "name": "Fairgrounds",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 3,
+    "imagePath": "assets/images/cards/fairgrounds.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "farm",
+    "name": "Farm",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/farm.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "fool",
+    "name": "Fool",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": -2,
+    "imagePath": "assets/images/cards/fool.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "general_store",
+    "name": "General Store",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/general_store.webp",
+    "pairedWith": "shopkeeper",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "historian",
+    "name": "Historian",
+    "type": "critter",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/historian.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "husband",
+    "name": "Husband (Harvester)",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/husband.webp",
+    "module": "base",
+    "hasImage": true,
+    "countsTowardCitySize": true,
+    "canShareSpace": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "inn",
+    "name": "Inn",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/inn.webp",
+    "pairedWith": "innkeeper",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "innkeeper",
+    "name": "Innkeeper",
+    "type": "critter",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/innkeeper.webp",
+    "pairedWith": "inn",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "judge",
+    "name": "Judge",
+    "type": "critter",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/judge.webp",
+    "pairedWith": "courthouse",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "king",
+    "name": "King",
+    "type": "critter",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 4,
+    "imagePath": "assets/images/cards/king.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "eventCount",
+      "userPrompt": "How many basic events and special events did you achieve?",
+      "calculation": {
+        "pointsPerBasicEvent": 1,
+        "pointsPerSpecialEvent": 2
+      }
+    }
+  },
+  {
+    "id": "lookout",
+    "name": "Lookout",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/lookout.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "mine",
+    "name": "Mine",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/mine.webp",
+    "pairedWith": "miner_mole",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "miner_mole",
+    "name": "Miner Mole",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/miner_mole.webp",
+    "pairedWith": "mine",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "monastery",
+    "name": "Monastery",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/monastery.webp",
+    "pairedWith": "monk",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "monk",
+    "name": "Monk",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/monk.webp",
+    "pairedWith": "monastery",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "palace",
+    "name": "Palace",
+    "type": "construction",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 4,
+    "imagePath": "assets/images/cards/palace.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "cardTypeCount",
+      "userPrompt": "Palace automatically counts unique constructions",
+      "calculation": {
+        "countType": "unique_constructions",
+        "pointsPerCard": 1,
+        "includesSelf": true
+      }
+    }
+  },
+  {
+    "id": "peddler",
+    "name": "Peddler",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/peddler.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "post_office",
+    "name": "Post Office",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/post_office.webp",
+    "pairedWith": "postal_pigeon",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "postal_pigeon",
+    "name": "Postal Pigeon",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "common",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/postal_pigeon.webp",
+    "pairedWith": "post_office",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "queen",
+    "name": "Queen",
+    "type": "critter",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 4,
+    "imagePath": "assets/images/cards/queen.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "ranger",
+    "name": "Ranger",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/ranger.webp",
+    "pairedWith": "dungeon",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "resin_refinery",
+    "name": "Resin Refinery",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/resin_refinery.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "ruins",
+    "name": "Ruins",
+    "type": "construction",
+    "cardColor": "traveller",
+    "rarity": "common",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/ruins.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "school",
+    "name": "School",
+    "type": "construction",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/school.webp",
+    "pairedWith": "teacher",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "cardTypeCount",
+      "userPrompt": "School automatically counts common critters",
+      "calculation": {
+        "countType": "common_critters",
+        "pointsPerCard": 1
+      }
+    }
+  },
+  {
+    "id": "shepherd",
+    "name": "Shepherd",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/shepherd.webp",
+    "pairedWith": "chapel",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "tokenPlacement",
+      "userPrompt": "How many point tokens are on Chapel?",
+      "calculation": {
+        "linkedCard": "chapel",
+        "pointsPerToken": 1
+      }
+    }
+  },
+  {
+    "id": "shopkeeper",
+    "name": "Shopkeeper",
+    "type": "critter",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/shopkeeper.webp",
+    "pairedWith": "general_store",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "storehouse",
+    "name": "Storehouse",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/storehouse.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "teacher",
+    "name": "Teacher",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/teacher.webp",
+    "pairedWith": "school",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "theatre",
+    "name": "Theatre",
+    "type": "construction",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 3,
+    "imagePath": "assets/images/cards/theatre.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "cardTypeCount",
+      "userPrompt": "Theatre automatically counts unique critters",
+      "calculation": {
+        "countType": "unique_critters",
+        "pointsPerCard": 1
+      }
+    }
+  },
+  {
+    "id": "twig_barge",
+    "name": "Twig Barge",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/twig_barge.webp",
+    "pairedWith": "barge_toad",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "undertaker",
+    "name": "Undertaker",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/undertaker.webp",
+    "pairedWith": "cemetery",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "university",
+    "name": "University",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "unique",
+    "basePoints": 3,
+    "imagePath": "assets/images/cards/university.webp",
+    "pairedWith": "architect",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "wanderer",
+    "name": "Wanderer",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "common",
+    "basePoints": 1,
+    "imagePath": "assets/images/cards/wanderer.webp",
+    "module": "base",
+    "hasImage": true,
+    "countsTowardCitySize": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "wife",
+    "name": "Wife (Gatherer)",
+    "type": "critter",
+    "cardColor": "prosperity",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/wife.webp",
+    "module": "base",
+    "hasImage": true,
+    "countsTowardCitySize": true,
+    "canShareSpace": true,
+    "conditionalScoring": {
+      "type": "cardPairing",
+      "userPrompt": "Wife automatically gets bonus if Husband is in city",
+      "calculation": {
+        "pairedCardId": "husband",
+        "bonusPoints": 3
+      }
+    }
+  },
+  {
+    "id": "woodcarver",
+    "name": "Woodcarver",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/woodcarver.webp",
+    "module": "base",
+    "hasImage": true,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "carnival",
+    "name": "Carnival",
+    "type": "construction",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/carnival.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "gazette",
+    "name": "Gazette",
+    "type": "construction",
+    "cardColor": "governance",
+    "rarity": "unique",
+    "basePoints": 3,
+    "imagePath": "assets/images/cards/gazette.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "scurrbble_stadium",
+    "name": "Scurrbble Stadium",
+    "type": "construction",
+    "cardColor": "destination",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/scurrbble_stadium.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "juggler",
+    "name": "Juggler",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "common",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/juggler.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "scurrbble_champion",
+    "name": "Scurrbble Champion",
+    "type": "critter",
+    "cardColor": "prosperity",
+    "rarity": "common",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/scurrbble_champion.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "cardPairing",
+      "calculation": {
+        "pairedCardId": "scurrbble_champion",
+        "bonusPoints": 2,
+        "note": "2 VP per other Scurrbble Champion"
+      }
+    }
+  },
+  {
+    "id": "town_crier",
+    "name": "Town Crier",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/town_crier.webp",
+    "module": "extra",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "rugwort_robber",
+    "name": "Rugwort the Robber",
+    "type": "critter",
+    "cardColor": "traveller",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/rugwort_robber.webp",
+    "module": "rugwort",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "rugwort_rowdy",
+    "name": "Rugwort the Rowdy",
+    "type": "critter",
+    "cardColor": "production",
+    "rarity": "unique",
+    "basePoints": 0,
+    "imagePath": "assets/images/cards/rugwort_rowdy.webp",
+    "module": "rugwort",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple"
+    }
+  },
+  {
+    "id": "rugwort_ruler",
+    "name": "Rugwort the Ruler",
+    "type": "critter",
+    "cardColor": "prosperity",
+    "rarity": "unique",
+    "basePoints": 2,
+    "imagePath": "assets/images/cards/rugwort_ruler.webp",
+    "module": "rugwort",
+    "hasImage": false,
+    "conditionalScoring": {
+      "type": "simple",
+      "note": "Manually add: 1 VP per event (basic or special) OTHER players achieved. Add to Point Tokens field."
+    }
+  }
+]

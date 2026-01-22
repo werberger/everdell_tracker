@@ -1,0 +1,82 @@
+# Everdell Base Game Card Colors/Categories
+
+## Construction Cards
+
+### Purple (Prosperity)
+- Castle - unique (4) - 1 VP / common construction
+- Ever Tree - unique (5) - 1 VP / prosperity card
+- Palace - unique (4) - 1 VP / unique construction
+- School - unique (2) - 1 VP / common critter
+- Theatre - unique (3) - 1 VP / unique critter
+
+### Red (Destination)
+- Cemetery - unique (0) - Reveal 4 cards, play 1 free
+- Chapel - unique (2) - Place 1pt + draw 2 cards / pt
+- Inn - common (2) - Play meadow card for 3⬮ less
+- Lookout - unique (2) - Copy basic or forest location
+- Monastery - unique (1) - Give 2⬮ to gain 4 pts
+- Post Office - common (2) - Give 2 cards, discard any, draw to limit
+- Scurrbble Stadium - common (2) - [extra! extra! expansion]
+
+### Blue (Governance)
+- Clock Tower - unique (0) - 3 pts, at season pay 1 pt to take action
+- Courthouse - unique (2) - Gain 1⬮, 1⬮, or 1⬮ after construction
+- Crane - unique (1) - Discard to play construct for 3⬮ less
+- Dungeon - unique (0) - Play card for 3⬮ less when critter locked
+- University - unique (3) - Discard city card, refund, gain 1⬮ + 1pt
+
+### Green (Production)
+- Carnival - unique (2) - Draw 1 / green or gain 1⬮ / 2 green
+- Fairgrounds - unique (3) - Draw 2 cards
+- Farm - common (1) - Gain 1⬮
+- General Store - common (1) - 1⬮ + 1⬮ if Farm
+- Mine - common (2) - Gain 1⬮
+- Resin Refinery - common (1) - Gain 1⬮
+- Storehouse - common (2) - Place 3⬮, 2⬮, 1⬮, or 2⬮, take all ⬮
+- Twig Barge - common (1) - Gain 2⬮
+
+### Tan (Traveller)
+- Ruins - common (0) - Discard city construction, refund + draw 2
+
+## Critter Cards
+
+### Purple (Prosperity)
+- Architect - unique (2) - 1 VP / ⬮ and ⬮ to 6 VP max
+- King - unique (4) - 1 VP / basic event + 2 VP / special event
+- Scurrbble Champion - common (2) - [extra! extra! expansion]
+- Wife - common (2) - 3 VP if Husband paired
+
+### Red (Destination)
+- Queen - unique (4) - Play card up to value 3 for free
+
+### Blue (Governance)
+- Historian - unique (1) - Draw 1 when critter or construction played
+- Innkeeper - unique (1) - Discard to play critter for 3⬮ less
+- Judge - unique (2) - Replace 1⬮ when critter or construction played
+- Shopkeeper - unique (1) - Gain 1⬮ after critter played in your city
+
+### Green (Production)
+- Barge Toad - common (1) - Gain 2⬮ for each farm
+- Chip Sweep - common (2) - Activate 1 production in your city
+- Doctor - unique (4) - Pay up to 3⬮ to gain 1pt each
+- Husband - common (2) - Gain 1⬮ if Wife paired and Farm
+- Miner Mole - common (1) - Copy 1 production in oppo city
+- Monk - unique (0) - Give up to 2⬮ to gain 2 pts each
+- Peddler - common (1) - Pay up to 2⬮ to gain 1⬮ each
+- Rugwort the Rowdy - unique (0) - [rugwort expansion]
+- Teacher - common (2) - Draw 2, keep 1, give 1
+- Town Crier - unique (2) - [extra! extra! expansion]
+- Woodcarver - common (2) - Pay up to 3⬮ to gain 1pt each
+
+### Tan (Traveller)
+- Bard - unique (0) - Discard up to 5 cards, gain 1pt / card
+- Fool - unique (-2) - Play to oppo city
+- Postal Pigeon - common (0) - Reveal 2 cards, play 1 up to value 3 for free
+- Ranger - unique (1) - Move worker, unlock 2nd cell
+- Shepherd - unique (1) - Gain 3⬮ + 1 pt / Chapel pt
+- Undertaker - unique (1) - Discard 3 meadow, replenish, draw 1
+- Wanderer - common (1) - Draw 3 cards (DOES NOT COUNT TOWARD 15-CARD LIMIT)
+
+## Special Rules
+- Husband/Wife: When paired, share 1 space (count as 1 toward 15-card limit)
+- Wanderer: Does NOT count toward 15-card limit (only exception in base game)

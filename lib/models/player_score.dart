@@ -99,6 +99,16 @@ class PlayerScore extends HiveObject {
   @HiveField(29)
   final int? prosperityCardPoints; // Purple (base card points)
 
+  // Visual card selection data (for future player stats)
+  @HiveField(30)
+  final List<String>? selectedCardIds;
+
+  @HiveField(31)
+  final Map<String, int>? cardTokenCounts;
+
+  @HiveField(32)
+  final Map<String, int>? cardResourceCounts;
+
   PlayerScore({
     required this.playerId,
     required this.playerName,
@@ -130,5 +140,8 @@ class PlayerScore extends HiveObject {
     this.governancePoints,
     this.travellerPoints,
     this.prosperityCardPoints,
+    this.selectedCardIds,
+    this.cardTokenCounts,
+    this.cardResourceCounts,
   });
 }

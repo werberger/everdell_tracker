@@ -12,6 +12,10 @@ class PlayerInputCard extends StatefulWidget {
   final bool isQuickEntry;
   final ValueChanged<bool> onQuickEntryChanged;
   final TextEditingController totalController;
+  final String entryMethod;
+  final ValueChanged<String> onEntryMethodChanged;
+  final Map<String, int>? selectedCardCounts;
+  final VoidCallback onSelectCards;
   final bool separatePointTokens;
   final bool autoConvertResources;
   final CardEntryMethod cardEntryMethod;
@@ -27,6 +31,7 @@ class PlayerInputCard extends StatefulWidget {
   final TextEditingController prosperityCardPointsController;
   final TextEditingController basicEventsController;
   final TextEditingController specialEventsController;
+  final TextEditingController specialEventsCountController;
   final TextEditingController prosperityPointsController;
   final TextEditingController journeyPointsController;
   final TextEditingController berriesController;
@@ -52,6 +57,10 @@ class PlayerInputCard extends StatefulWidget {
     required this.isQuickEntry,
     required this.onQuickEntryChanged,
     required this.totalController,
+    required this.entryMethod,
+    required this.onEntryMethodChanged,
+    required this.selectedCardCounts,
+    required this.onSelectCards,
     required this.separatePointTokens,
     required this.autoConvertResources,
     required this.cardEntryMethod,
@@ -67,6 +76,7 @@ class PlayerInputCard extends StatefulWidget {
     required this.prosperityCardPointsController,
     required this.basicEventsController,
     required this.specialEventsController,
+    required this.specialEventsCountController,
     required this.prosperityPointsController,
     required this.journeyPointsController,
     required this.berriesController,
@@ -225,14 +235,175 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 ],
               ),
               const SizedBox(height: 8),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Quick Total Entry'),
-                value: widget.isQuickEntry,
-                onChanged: widget.onQuickEntryChanged,
+              const Text('Entry Method:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment<String>(
+                    value: 'visual',
+                    label: Text('Card Selection'),
+                    icon: Icon(Icons.credit_card),
+                  ),
+                  ButtonSegment<String>(
+                    value: 'basic',
+                    label: Text('Basic Input'),
+                    icon: Icon(Icons.list),
+                  ),
+                  ButtonSegment<String>(
+                    value: 'quick',
+                    label: Text('Quick Total'),
+                    icon: Icon(Icons.speed),
+                  ),
+                ],
+                selected: {widget.entryMethod},
+                onSelectionChanged: (Set<String> selected) {
+                  widget.onEntryMethodChanged(selected.first);
+                },
               ),
               const SizedBox(height: 8),
-              if (widget.isQuickEntry)
+              if (widget.entryMethod == 'visual') ...[
+                ElevatedButton.icon(
+                  onPressed: widget.onSelectCards,
+                  icon: const Icon(Icons.grid_view),
+                  label: Text(widget.selectedCardCounts != null && widget.selectedCardCounts!.isNotEmpty
+                      ? '${widget.selectedCardCounts!.values.fold(0, (sum, count) => sum + count)} cards selected'
+                      : 'Select Cards'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text('Additional Scoring:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                if (widget.separatePointTokens)
+                  TextField(
+                    controller: widget.pointTokensController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: const InputDecoration(
+                      labelText: 'Point Tokens',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (_) => widget.onChanged(),
+                  ),
+                if (widget.separatePointTokens) const SizedBox(height: 8),
+                TextField(
+                  controller: widget.basicEventsController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    labelText: 'Basic Events (count)',
+                    border: OutlineInputBorder(),
+                    helperText: 'x3 points each',
+                  ),
+                  onChanged: (_) => widget.onChanged(),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: widget.specialEventsCountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Special Events (count)',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: widget.specialEventsController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Special Events (points)',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: widget.journeyPointsController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
+                    labelText: 'Journey Points',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => widget.onChanged(),
+                ),
+                const SizedBox(height: 8),
+                const Text('Leftover Resources:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: widget.berriesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Berries',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: widget.resinController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Resin',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: widget.pebblesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Pebbles',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: widget.woodController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        decoration: const InputDecoration(
+                          labelText: 'Wood/Twigs',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => widget.onChanged(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+              ],
+              if (widget.entryMethod == 'quick')
                 TextField(
                   controller: widget.totalController,
                   keyboardType: TextInputType.number,
@@ -243,7 +414,7 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                   ),
                   onChanged: (_) => widget.onChanged(),
                 )
-              else
+              else if (widget.entryMethod == 'basic')
                 ScoreBreakdownForm(
                   separatePointTokens: widget.separatePointTokens,
                   autoConvertResources: widget.autoConvertResources,

@@ -47,13 +47,16 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       governancePoints: fields[27] as int?,
       travellerPoints: fields[28] as int?,
       prosperityCardPoints: fields[29] as int?,
+      selectedCardIds: (fields[30] as List?)?.cast<String>(),
+      cardTokenCounts: (fields[31] as Map?)?.cast<String, int>(),
+      cardResourceCounts: (fields[32] as Map?)?.cast<String, int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, PlayerScore obj) {
     writer
-      ..writeByte(30)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.playerId)
       ..writeByte(1)
@@ -113,7 +116,13 @@ class PlayerScoreAdapter extends TypeAdapter<PlayerScore> {
       ..writeByte(28)
       ..write(obj.travellerPoints)
       ..writeByte(29)
-      ..write(obj.prosperityCardPoints);
+      ..write(obj.prosperityCardPoints)
+      ..writeByte(30)
+      ..write(obj.selectedCardIds)
+      ..writeByte(31)
+      ..write(obj.cardTokenCounts)
+      ..writeByte(32)
+      ..write(obj.cardResourceCounts);
   }
 
   @override

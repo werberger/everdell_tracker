@@ -5,6 +5,7 @@ import '../models/app_settings.dart';
 import '../models/game.dart';
 import '../models/player_score.dart';
 import '../models/expansion.dart';
+import '../models/everdell_card.dart';
 import '../utils/constants.dart';
 
 class StorageService {
@@ -24,6 +25,13 @@ class StorageService {
     }
     if (!Hive.isAdapterRegistered(3)) {
       Hive.registerAdapter(AppSettingsAdapter());
+    }
+    // Card system adapters
+    if (!Hive.isAdapterRegistered(10)) {
+      Hive.registerAdapter(EverdellCardAdapter());
+    }
+    if (!Hive.isAdapterRegistered(11)) {
+      Hive.registerAdapter(ConditionalScoringAdapter());
     }
   }
 

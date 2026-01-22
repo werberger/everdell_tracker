@@ -6,6 +6,7 @@ import 'history_screen.dart';
 import 'new_game_screen.dart';
 import 'settings_screen.dart';
 import 'stats_screen.dart';
+import 'card_selection_screen_example.dart';
 import '../providers/game_provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -83,7 +84,7 @@ class HomeScreen extends StatelessWidget {
               },
               child: const Text('Player Stats'),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),

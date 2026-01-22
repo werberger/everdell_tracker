@@ -6,6 +6,7 @@ enum CardEntryMethod {
   simple,
   byType,
   byColor,
+  visual, // Visual card selection method
 }
 
 @HiveType(typeId: 3)
@@ -37,7 +38,7 @@ class AppSettings extends HiveObject {
       separatePointTokens: true,
       autoConvertResources: true,
       darkMode: false,
-      cardEntryMethodIndex: 0,
+      cardEntryMethodIndex: 3, // visual = index 3
     );
   }
 

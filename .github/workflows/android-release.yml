@@ -1,0 +1,177 @@
+name: Android Release Build
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - '!.github/workflows/android-release.yml'
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Run code generation
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+      
+      - name: Generate launcher icons for all flavors
+        run: |
+          flutter pub run flutter_launcher_icons:main -f flutter_launcher_icons-teacher.yaml
+          flutter pub run flutter_launcher_icons:main -f flutter_launcher_icons-badger.yaml
+          flutter pub run flutter_launcher_icons:main -f flutter_launcher_icons-evertree.yaml
+          flutter pub run flutter_launcher_icons:main -f flutter_launcher_icons-squirrel.yaml
+      
+      - name: Build Teacher APK
+        run: flutter build apk --release --flavor teacher
+      
+      - name: Build Badger APK
+        run: flutter build apk --release --flavor badger
+      
+      - name: Build Evertree APK
+        run: flutter build apk --release --flavor evertree
+      
+      - name: Build Squirrel APK
+        run: flutter build apk --release --flavor squirrel
+      
+      - name: Build App Bundles
+        run: |
+          flutter build appbundle --release --flavor teacher
+          flutter build appbundle --release --flavor badger
+          flutter build appbundle --release --flavor evertree
+          flutter build appbundle --release --flavor squirrel
+      
+      - name: Get version from pubspec
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | cut -d' ' -f2 | cut -d'+' -f1)
+          BUILD=$(grep '^version:' pubspec.yaml | cut -d'+' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build=$BUILD" >> $GITHUB_OUTPUT
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: Everdell Tracker v${{ steps.version.outputs.version }}
+          body: |
+            ## Everdell Tracker v${{ steps.version.outputs.version }}
+            
+            ### What's New
+            - Visual card selection with carousel/fan interface
+            - Dynamic scoring with real-time calculations
+            - Settings for layout preference (Table Top vs Fan)
+            - "Your City" section showing selected cards
+            - Complete card database with 57 cards
+            
+            ### Download
+            - **everdell-tracker.apk**: Standard APK for all devices
+            - **app-release.aab**: App Bundle for Play Store
+            
+            Build: ${{ steps.version.outputs.build }}
+          draft: false
+          prerelease: false
+      
+      - name: Upload Teacher APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-teacher-release.apk
+          asset_name: everdell-tracker-teacher-v${{ steps.version.outputs.version }}.apk
+          asset_content_type: application/vnd.android.package-archive
+      
+      - name: Upload Badger APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-badger-release.apk
+          asset_name: everdell-tracker-badger-v${{ steps.version.outputs.version }}.apk
+          asset_content_type: application/vnd.android.package-archive
+      
+      - name: Upload Evertree APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-evertree-release.apk
+          asset_name: everdell-tracker-evertree-v${{ steps.version.outputs.version }}.apk
+          asset_content_type: application/vnd.android.package-archive
+      
+      - name: Upload Squirrel APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-squirrel-release.apk
+          asset_name: everdell-tracker-squirrel-v${{ steps.version.outputs.version }}.apk
+          asset_content_type: application/vnd.android.package-archive
+      
+      - name: Upload Teacher App Bundle
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/teacherRelease/app-teacher-release.aab
+          asset_name: everdell-tracker-teacher-v${{ steps.version.outputs.version }}.aab
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Badger App Bundle
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/badgerRelease/app-badger-release.aab
+          asset_name: everdell-tracker-badger-v${{ steps.version.outputs.version }}.aab
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Evertree App Bundle
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/evertreeRelease/app-evertree-release.aab
+          asset_name: everdell-tracker-evertree-v${{ steps.version.outputs.version }}.aab
+          asset_content_type: application/octet-stream
+      
+      - name: Upload Squirrel App Bundle
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/squirrelRelease/app-squirrel-release.aab
+          asset_name: everdell-tracker-squirrel-v${{ steps.version.outputs.version }}.aab
+          asset_content_type: application/octet-stream

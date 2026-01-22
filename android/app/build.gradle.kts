@@ -30,6 +30,34 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "icon"
+    productFlavors {
+        create("teacher") {
+            dimension = "icon"
+            applicationIdSuffix = ".teacher"
+            versionNameSuffix = "-teacher"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_teacher"
+        }
+        create("badger") {
+            dimension = "icon"
+            applicationIdSuffix = ".badger"
+            versionNameSuffix = "-badger"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_badger"
+        }
+        create("evertree") {
+            dimension = "icon"
+            applicationIdSuffix = ".evertree"
+            versionNameSuffix = "-evertree"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_evertree"
+        }
+        create("squirrel") {
+            dimension = "icon"
+            applicationIdSuffix = ".squirrel"
+            versionNameSuffix = "-squirrel"
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher_squirrel"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

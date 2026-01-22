@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import '../models/everdell_card.dart';
 
 class CardDisplayWidget extends StatelessWidget {
@@ -7,6 +9,7 @@ class CardDisplayWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final double width;
   final double height;
+  static Future<double>? _cardAspectRatioFuture;
 
   const CardDisplayWidget({
     super.key,
@@ -16,6 +19,26 @@ class CardDisplayWidget extends StatelessWidget {
     this.width = 120,
     this.height = 180,
   });
+
+  Future<double> _getCardAspectRatio() async {
+    // Use a single known card image to define the ratio for all cards.
+    const referenceImagePath = 'assets/images/cards/architect.webp';
+    final data = await rootBundle.load(referenceImagePath);
+    final bytes = data.buffer.asUint8List();
+    final codec = await ui.instantiateImageCodec(bytes);
+    try {
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+      try {
+        final ratio = image.width / image.height;
+        return ratio;
+      } finally {
+        image.dispose();
+      }
+    } finally {
+      codec.dispose();
+    }
+  }
 
   Color _getColorForCardColor(CardColor cardColor) {
     switch (cardColor) {
@@ -49,38 +72,49 @@ class CardDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _cardAspectRatioFuture ??= _getCardAspectRatio();
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? Colors.amber : Colors.grey.shade400,
-            width: isSelected ? 4 : 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+      child: FutureBuilder<double>(
+        future: _cardAspectRatioFuture,
+        builder: (context, snapshot) {
+          final aspectRatio = snapshot.data ?? (2.5 / 3.5);
+
+          return AspectRatio(
+            aspectRatio: aspectRatio,
+            child: Container(
+              width: width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected ? Colors.amber : Colors.grey.shade400,
+                  width: isSelected ? 4 : 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: card.hasImage
+                    ? Image.asset(
+                        card.imagePath,
+                        fit: BoxFit.cover, // Matches card ratio, no whitespace
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback to placeholder if image fails to load
+                          return _buildPlaceholder(context);
+                        },
+                      )
+                    : _buildPlaceholder(context),
+              ),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: card.hasImage
-              ? Image.asset(
-                  card.imagePath,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    // Fallback to placeholder if image fails to load
-                    return _buildPlaceholder(context);
-                  },
-                )
-              : _buildPlaceholder(context),
-        ),
+          );
+        },
       ),
     );
   }

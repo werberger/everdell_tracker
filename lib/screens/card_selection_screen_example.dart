@@ -783,47 +783,71 @@ class _CardSelectionScreenExampleState
                                   isSelected: isSelected,
                                   onTap: () => _addCard(card),
                                 ),
-                                // Show count badge for selected cards
-                                if (isSelected)
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: CircleAvatar(
-                                      radius: 16,
-                                      backgroundColor: Colors.amber,
-                                      child: Text(
-                                        '$cardCount',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
+                                // Top button row - matching carousel layout
+                                Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.black.withOpacity(0.5),
+                                          Colors.transparent,
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                // Remove button (minus)
-                                if (isSelected)
-                                  Positioned(
-                                    bottom: 4,
-                                    left: 4,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.remove_circle),
-                                      color: Colors.red,
-                                      onPressed: () => _removeCard(card),
-                                      iconSize: 28,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Remove button (left)
+                                        if (isSelected)
+                                          IconButton(
+                                            icon: const Icon(Icons.remove_circle),
+                                            color: Colors.red,
+                                            iconSize: 28,
+                                            onPressed: () => _removeCard(card),
+                                          )
+                                        else
+                                          const SizedBox(width: 48),
+                                        
+                                        // Count badge (center)
+                                        if (cardCount > 0)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.amber,
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              '$cardCount',
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          const SizedBox(width: 48),
+                                        
+                                        // Add button (right)
+                                        if (card.rarity == CardRarity.common)
+                                          IconButton(
+                                            icon: const Icon(Icons.add_circle),
+                                            color: Colors.green,
+                                            iconSize: 28,
+                                            onPressed: () => _addCard(card),
+                                          )
+                                        else
+                                          const SizedBox(width: 48),
+                                      ],
                                     ),
                                   ),
-                                // Add button (plus) for common cards
-                                if (card.rarity == CardRarity.common)
-                                  Positioned(
-                                    bottom: 4,
-                                    right: 4,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.add_circle),
-                                      color: Colors.green,
-                                      onPressed: () => _addCard(card),
-                                      iconSize: 28,
-                                    ),
-                                  ),
+                                ),
                               ],
                             ),
                           );
@@ -900,31 +924,33 @@ class _CardSelectionScreenExampleState
       child: Column(
         children: [
           colorFilterChips,
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Swipe to browse • Tap center card to select',
             style: Theme.of(context).textTheme.bodySmall,
           ),
-          const SizedBox(height: 16),
-          CardCarouselWidget(
-            cards: cardsToDisplay,
-            selectedCardIds: _selectedCardCounts.keys.toSet(),
-            selectedCardCounts: _selectedCardCounts,
-            onCardTap: (card) {
-              if (card.rarity == CardRarity.unique) {
-                // Toggle selection for unique cards
-                if (_selectedCardCounts.containsKey(card.id)) {
-                  _removeCard(card);
+          const SizedBox(height: 8),
+          Expanded(
+            child: CardCarouselWidget(
+              cards: cardsToDisplay,
+              selectedCardIds: _selectedCardCounts.keys.toSet(),
+              selectedCardCounts: _selectedCardCounts,
+              onCardTap: (card) {
+                if (card.rarity == CardRarity.unique) {
+                  // Toggle selection for unique cards
+                  if (_selectedCardCounts.containsKey(card.id)) {
+                    _removeCard(card);
+                  } else {
+                    _addCard(card);
+                  }
                 } else {
+                  // For common cards, just add one
                   _addCard(card);
                 }
-              } else {
-                // For common cards, just add one
-                _addCard(card);
-              }
-            },
-            onCardAdd: (card) => _addCard(card),
-            onCardRemove: (card) => _removeCard(card),
+              },
+              onCardAdd: (card) => _addCard(card),
+              onCardRemove: (card) => _removeCard(card),
+            ),
           ),
         ],
       ),

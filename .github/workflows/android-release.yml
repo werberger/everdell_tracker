@@ -13,6 +13,8 @@ jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout code
@@ -70,108 +72,48 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "build=$BUILD" >> $GITHUB_OUTPUT
       
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create Release with APKs and AABs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          release_name: Everdell Tracker v${{ steps.version.outputs.version }}
-          body: |
-            ## Everdell Tracker v${{ steps.version.outputs.version }}
-            
-            ### What's New
-            - Visual card selection with carousel/fan interface
-            - Dynamic scoring with real-time calculations
-            - Settings for layout preference (Table Top vs Fan)
-            - "Your City" section showing selected cards
-            - Complete card database with 57 cards
-            
-            ### Download
-            - **everdell-tracker.apk**: Standard APK for all devices
-            - **app-release.aab**: App Bundle for Play Store
-            
-            Build: ${{ steps.version.outputs.build }}
-          draft: false
-          prerelease: false
-      
-      - name: Upload Teacher APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-teacher-release.apk
-          asset_name: everdell-tracker-teacher-v${{ steps.version.outputs.version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-      
-      - name: Upload Badger APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-badger-release.apk
-          asset_name: everdell-tracker-badger-v${{ steps.version.outputs.version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-      
-      - name: Upload Evertree APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-evertree-release.apk
-          asset_name: everdell-tracker-evertree-v${{ steps.version.outputs.version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-      
-      - name: Upload Squirrel APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-squirrel-release.apk
-          asset_name: everdell-tracker-squirrel-v${{ steps.version.outputs.version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-      
-      - name: Upload Teacher App Bundle
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/teacherRelease/app-teacher-release.aab
-          asset_name: everdell-tracker-teacher-v${{ steps.version.outputs.version }}.aab
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Badger App Bundle
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/badgerRelease/app-badger-release.aab
-          asset_name: everdell-tracker-badger-v${{ steps.version.outputs.version }}.aab
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Evertree App Bundle
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/evertreeRelease/app-evertree-release.aab
-          asset_name: everdell-tracker-evertree-v${{ steps.version.outputs.version }}.aab
-          asset_content_type: application/octet-stream
-      
-      - name: Upload Squirrel App Bundle
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/bundle/squirrelRelease/app-squirrel-release.aab
-          asset_name: everdell-tracker-squirrel-v${{ steps.version.outputs.version }}.aab
-          asset_content_type: application/octet-stream
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          BUILD="${{ steps.version.outputs.build }}"
+          
+          # Create release notes
+          cat > release_notes.md << 'EOF'
+          ## Everdell Tracker v${{ steps.version.outputs.version }}
+          
+          ### 🎨 Four Icon Variants Available
+          Choose your favorite Everdell character:
+          - **Teacher** (Hedgehog with book) - `everdell-tracker-teacher-v${{ steps.version.outputs.version }}.apk`
+          - **Badger** (Badger wanderer) - `everdell-tracker-badger-v${{ steps.version.outputs.version }}.apk`
+          - **Evertree** (Ever Tree) - `everdell-tracker-evertree-v${{ steps.version.outputs.version }}.apk`
+          - **Squirrel** (Squirrel with berries) - `everdell-tracker-squirrel-v${{ steps.version.outputs.version }}.apk`
+          
+          ### What's New
+          - Visual card selection with carousel/fan interface
+          - Dynamic scoring with real-time calculations
+          - Settings for layout preference (Table Top vs Fan)
+          - "Your City" section showing selected cards
+          - Complete card database with 57 cards (base game + expansions)
+          - Conditional scoring for King, Architect, Rugwort the Ruler
+          - Real-time score updates
+          
+          ### Installation
+          Download your preferred icon variant APK and install on your Android device.
+          
+          Build: ${{ steps.version.outputs.build }}
+          EOF
+          
+          # Create release and upload all assets
+          gh release create "v${VERSION}" \
+            --title "Everdell Tracker v${VERSION}" \
+            --notes-file release_notes.md \
+            build/app/outputs/flutter-apk/app-teacher-release.apk#everdell-tracker-teacher-v${VERSION}.apk \
+            build/app/outputs/flutter-apk/app-badger-release.apk#everdell-tracker-badger-v${VERSION}.apk \
+            build/app/outputs/flutter-apk/app-evertree-release.apk#everdell-tracker-evertree-v${VERSION}.apk \
+            build/app/outputs/flutter-apk/app-squirrel-release.apk#everdell-tracker-squirrel-v${VERSION}.apk \
+            build/app/outputs/bundle/teacherRelease/app-teacher-release.aab#everdell-tracker-teacher-v${VERSION}.aab \
+            build/app/outputs/bundle/badgerRelease/app-badger-release.aab#everdell-tracker-badger-v${VERSION}.aab \
+            build/app/outputs/bundle/evertreeRelease/app-evertree-release.aab#everdell-tracker-evertree-v${VERSION}.aab \
+            build/app/outputs/bundle/squirrelRelease/app-squirrel-release.aab#everdell-tracker-squirrel-v${VERSION}.aab

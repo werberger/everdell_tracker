@@ -435,7 +435,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
         title: Text(_editingGameId == null ? 'New Game' : 'Edit Game'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
         children: [
           const Text(
             'Game Date & Time',

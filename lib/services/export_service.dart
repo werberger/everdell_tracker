@@ -136,6 +136,18 @@ class ExportService {
       'tiebreakerResources': score.tiebreakerResources,
       'isWinner': score.isWinner,
       'isQuickEntry': score.isQuickEntry,
+      'playerOrder': score.playerOrder,
+      'startingCards': score.startingCards,
+      'constructionPoints': score.constructionPoints,
+      'critterPoints': score.critterPoints,
+      'productionPoints': score.productionPoints,
+      'destinationPoints': score.destinationPoints,
+      'governancePoints': score.governancePoints,
+      'travellerPoints': score.travellerPoints,
+      'prosperityCardPoints': score.prosperityCardPoints,
+      'selectedCardIds': score.selectedCardIds,
+      'cardTokenCounts': score.cardTokenCounts,
+      'cardResourceCounts': score.cardResourceCounts,
     };
   }
 
@@ -179,6 +191,24 @@ class ExportService {
       tiebreakerResources: json['tiebreakerResources'] as int,
       isWinner: json['isWinner'] as bool? ?? false,
       isQuickEntry: json['isQuickEntry'] as bool? ?? false,
+      playerOrder: json['playerOrder'] as int?,
+      startingCards: json['startingCards'] as int?,
+      constructionPoints: json['constructionPoints'] as int?,
+      critterPoints: json['critterPoints'] as int?,
+      productionPoints: json['productionPoints'] as int?,
+      destinationPoints: json['destinationPoints'] as int?,
+      governancePoints: json['governancePoints'] as int?,
+      travellerPoints: json['travellerPoints'] as int?,
+      prosperityCardPoints: json['prosperityCardPoints'] as int?,
+      selectedCardIds: json['selectedCardIds'] != null
+          ? List<String>.from(json['selectedCardIds'])
+          : null,
+      cardTokenCounts: json['cardTokenCounts'] != null
+          ? Map<String, int>.from(json['cardTokenCounts'])
+          : null,
+      cardResourceCounts: json['cardResourceCounts'] != null
+          ? Map<String, int>.from(json['cardResourceCounts'])
+          : null,
     );
   }
 }

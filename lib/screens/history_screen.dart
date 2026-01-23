@@ -57,44 +57,60 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ],
           ),
-          DropdownButtonHideUnderline(
-            child: DropdownButton<HistorySortOption>(
-              value: _sortOption,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _sortOption = value);
-                }
-              },
-              items: const [
-                DropdownMenuItem(
-                  value: HistorySortOption.dateDesc,
-                  child: Text('Newest'),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              children: [
+                const Text('Sort: '),
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<HistorySortOption>(
+                      value: _sortOption,
+                      isExpanded: true,
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _sortOption = value);
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: HistorySortOption.dateDesc,
+                          child: Text('Newest'),
+                        ),
+                        DropdownMenuItem(
+                          value: HistorySortOption.dateAsc,
+                          child: Text('Oldest'),
+                        ),
+                        DropdownMenuItem(
+                          value: HistorySortOption.highestScore,
+                          child: Text('Highest Score'),
+                        ),
+                        DropdownMenuItem(
+                          value: HistorySortOption.winnerName,
+                          child: Text('Winner Name'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                DropdownMenuItem(
-                  value: HistorySortOption.dateAsc,
-                  child: Text('Oldest'),
-                ),
-                DropdownMenuItem(
-                  value: HistorySortOption.highestScore,
-                  child: Text('Highest Score'),
-                ),
-                DropdownMenuItem(
-                  value: HistorySortOption.winnerName,
-                  child: Text('Winner Name'),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: _openFilterDialog,
+                  tooltip: 'Filter',
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _openFilterDialog,
-          ),
-        ],
+        ),
       ),
       body: games.isEmpty
           ? const Center(child: Text('No games yet.'))
           : ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
               itemCount: games.length,
               itemBuilder: (context, index) {
                 final game = games[index];

@@ -83,66 +83,141 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.separatePointTokens)
-          _numberField(
-            label: 'Point Tokens',
-            controller: widget.pointTokensController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Point Tokens',
+                  controller: widget.pointTokensController,
+                ),
+              ),
+              const Spacer(),
+            ],
           ),
         // Card points based on entry method
         // When using visual card selection, default to byColor for basic input
         if (widget.cardEntryMethod == CardEntryMethod.simple)
-          _numberField(
-            label: 'Construction & Critter Points',
-            controller: widget.cardPointsController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Construction & Critter Points',
+                  controller: widget.cardPointsController,
+                ),
+              ),
+              const Spacer(),
+            ],
           ),
-        if (widget.cardEntryMethod == CardEntryMethod.byType) ...[
-          _numberField(
-            label: 'Construction Points',
-            controller: widget.constructionPointsController,
+        if (widget.cardEntryMethod == CardEntryMethod.byType)
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Construction Points',
+                  controller: widget.constructionPointsController,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _numberField(
+                  label: 'Critter Points',
+                  controller: widget.critterPointsController,
+                ),
+              ),
+            ],
           ),
-          _numberField(
-            label: 'Critter Points',
-            controller: widget.critterPointsController,
-          ),
-        ],
         if (widget.cardEntryMethod == CardEntryMethod.byColor ||
             widget.cardEntryMethod == CardEntryMethod.visual) ...[
-          _numberField(
-            label: 'Production (Green)',
-            controller: widget.productionPointsController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Production',
+                  controller: widget.productionPointsController,
+                  borderColor: Colors.green.shade600,
+                  backgroundColor: Colors.green.shade50,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _numberField(
+                  label: 'Destination',
+                  controller: widget.destinationPointsController,
+                  borderColor: Colors.red.shade600,
+                  backgroundColor: Colors.red.shade50,
+                ),
+              ),
+            ],
           ),
-          _numberField(
-            label: 'Destination (Red)',
-            controller: widget.destinationPointsController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Governance',
+                  controller: widget.governancePointsController,
+                  borderColor: Colors.blue.shade600,
+                  backgroundColor: Colors.blue.shade50,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _numberField(
+                  label: 'Traveller',
+                  controller: widget.travellerPointsController,
+                  allowNegative: true,
+                  borderColor: Colors.brown.shade400,
+                  backgroundColor: Colors.brown.shade50,
+                ),
+              ),
+            ],
           ),
-          _numberField(
-            label: 'Governance (Blue)',
-            controller: widget.governancePointsController,
-          ),
-          _numberField(
-            label: 'Traveller (Tan)',
-            controller: widget.travellerPointsController,
-            allowNegative: true,
-          ),
-          _numberField(
-            label: 'Prosperity (Purple)',
-            controller: widget.prosperityCardPointsController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Prosperity',
+                  controller: widget.prosperityCardPointsController,
+                  borderColor: Colors.purple.shade600,
+                  backgroundColor: Colors.purple.shade50,
+                ),
+              ),
+              const Spacer(),
+            ],
           ),
         ],
-        _numberField(
-          label: 'Basic Events (count)',
-          controller: widget.basicEventsController,
+        Row(
+          children: [
+            Expanded(
+              child: _numberField(
+                label: 'Basic Events (count)',
+                controller: widget.basicEventsController,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _numberField(
+                label: 'Special Events (points)',
+                controller: widget.specialEventsController,
+              ),
+            ),
+          ],
         ),
-        _numberField(
-          label: 'Special Events (points)',
-          controller: widget.specialEventsController,
-        ),
-        _numberField(
-          label: 'Prosperity Bonus Points',
-          controller: widget.prosperityPointsController,
-        ),
-        _numberField(
-          label: 'Journey Points',
-          controller: widget.journeyPointsController,
+        Row(
+          children: [
+            Expanded(
+              child: _numberField(
+                label: 'Prosperity Bonus Points',
+                controller: widget.prosperityPointsController,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _numberField(
+                label: 'Journey Points',
+                controller: widget.journeyPointsController,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         InkWell(
@@ -177,21 +252,39 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
         ),
         if (_showTiebreaker) ...[
           const SizedBox(height: 8),
-          _numberField(
-            label: 'Berries',
-            controller: widget.berriesController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Berries',
+                  controller: widget.berriesController,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _numberField(
+                  label: 'Resin',
+                  controller: widget.resinController,
+                ),
+              ),
+            ],
           ),
-          _numberField(
-            label: 'Resin',
-            controller: widget.resinController,
-          ),
-          _numberField(
-            label: 'Pebbles',
-            controller: widget.pebblesController,
-          ),
-          _numberField(
-            label: 'Wood',
-            controller: widget.woodController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Pebbles',
+                  controller: widget.pebblesController,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _numberField(
+                  label: 'Wood',
+                  controller: widget.woodController,
+                ),
+              ),
+            ],
           ),
           if (widget.autoConvertResources)
             Padding(
@@ -203,31 +296,66 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
             ),
         ],
         const SizedBox(height: 12),
-        if (widget.expansions.contains(Expansion.pearlbrook))
-          _numberField(
-            label: 'Pearlbrook Points',
-            controller: widget.pearlPointsController,
-          ),
         if (widget.expansions.contains(Expansion.pearlbrook) ||
-            widget.expansions.contains(Expansion.mistwood))
-          _numberField(
-            label: 'Wonder Points',
-            controller: widget.wonderPointsController,
+            (widget.expansions.contains(Expansion.pearlbrook) ||
+                widget.expansions.contains(Expansion.mistwood)))
+          Row(
+            children: [
+              if (widget.expansions.contains(Expansion.pearlbrook))
+                Expanded(
+                  child: _numberField(
+                    label: 'Pearlbrook Points',
+                    controller: widget.pearlPointsController,
+                  ),
+                ),
+              if (widget.expansions.contains(Expansion.pearlbrook) &&
+                  (widget.expansions.contains(Expansion.pearlbrook) ||
+                      widget.expansions.contains(Expansion.mistwood)))
+                const SizedBox(width: 8),
+              if (widget.expansions.contains(Expansion.pearlbrook) ||
+                  widget.expansions.contains(Expansion.mistwood))
+                Expanded(
+                  child: _numberField(
+                    label: 'Wonder Points',
+                    controller: widget.wonderPointsController,
+                  ),
+                ),
+            ],
           ),
-        if (widget.expansions.contains(Expansion.spirecrest))
-          _numberField(
-            label: 'Weather Points',
-            controller: widget.weatherPointsController,
-          ),
-        if (widget.expansions.contains(Expansion.bellfaire))
-          _numberField(
-            label: 'Garland Points',
-            controller: widget.garlandPointsController,
+        if (widget.expansions.contains(Expansion.spirecrest) ||
+            widget.expansions.contains(Expansion.bellfaire))
+          Row(
+            children: [
+              if (widget.expansions.contains(Expansion.spirecrest))
+                Expanded(
+                  child: _numberField(
+                    label: 'Weather Points',
+                    controller: widget.weatherPointsController,
+                  ),
+                ),
+              if (widget.expansions.contains(Expansion.spirecrest) &&
+                  widget.expansions.contains(Expansion.bellfaire))
+                const SizedBox(width: 8),
+              if (widget.expansions.contains(Expansion.bellfaire))
+                Expanded(
+                  child: _numberField(
+                    label: 'Garland Points',
+                    controller: widget.garlandPointsController,
+                  ),
+                ),
+            ],
           ),
         if (widget.expansions.contains(Expansion.mistwood))
-          _numberField(
-            label: 'Ticket Points',
-            controller: widget.ticketPointsController,
+          Row(
+            children: [
+              Expanded(
+                child: _numberField(
+                  label: 'Ticket Points',
+                  controller: widget.ticketPointsController,
+                ),
+              ),
+              const Spacer(),
+            ],
           ),
       ],
     );
@@ -237,20 +365,48 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
     required String label,
     required TextEditingController controller,
     bool allowNegative = false,
+    Color? borderColor,
+    Color? backgroundColor,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: TextField(
-        controller: controller,
-        keyboardType: const TextInputType.numberWithOptions(signed: true),
-        inputFormatters: allowNegative
-            ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))]
-            : [FilteringTextInputFormatter.digitsOnly],
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        onChanged: (_) => widget.onChanged(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12)),
+          const SizedBox(height: 4),
+          TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(signed: true),
+            inputFormatters: allowNegative
+                ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))]
+                : [FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: borderColor ?? Colors.grey.shade400,
+                  width: borderColor != null ? 2.0 : 1.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: borderColor ?? Colors.grey.shade400,
+                  width: borderColor != null ? 2.0 : 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: borderColor ?? Theme.of(context).primaryColor,
+                  width: 2.0,
+                ),
+              ),
+              filled: backgroundColor != null,
+              fillColor: backgroundColor,
+              hintText: '0',
+            ),
+            onChanged: (_) => widget.onChanged(),
+          ),
+        ],
       ),
     );
   }

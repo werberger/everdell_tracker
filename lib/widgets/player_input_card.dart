@@ -170,6 +170,8 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
             ),
             if (_isExpanded) ...[
               const SizedBox(height: 8),
+              const Text('Player Name', style: TextStyle(fontSize: 12)),
+              const SizedBox(height: 4),
               Autocomplete<String>(
                 initialValue:
                     TextEditingValue(text: widget.nameController.text),
@@ -191,8 +193,8 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                     controller: controller,
                     focusNode: focusNode,
                     decoration: const InputDecoration(
-                      labelText: 'Player Name',
                       border: OutlineInputBorder(),
+                      hintText: 'Enter name',
                     ),
                     textInputAction: TextInputAction.next,
                     onChanged: (value) {
@@ -207,29 +209,42 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
               Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: widget.playerOrderController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        labelText: 'Player Order (1st, 2nd, etc.)',
-                        border: OutlineInputBorder(),
-                        hintText: '1-6',
-                      ),
-                      onChanged: (_) => _updateStartingCards(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Player Order (1st, 2nd, etc.)', style: TextStyle(fontSize: 12)),
+                        const SizedBox(height: 4),
+                        TextField(
+                          controller: widget.playerOrderController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: '1-6',
+                          ),
+                          onChanged: (_) => _updateStartingCards(),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: TextField(
-                      controller: widget.startingCardsController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        labelText: 'Starting Cards',
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: (_) => widget.onChanged(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Starting Cards', style: TextStyle(fontSize: 12)),
+                        const SizedBox(height: 4),
+                        TextField(
+                          controller: widget.startingCardsController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: '5-8',
+                          ),
+                          onChanged: (_) => widget.onChanged(),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -238,27 +253,48 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
               const Text('Entry Method:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               SegmentedButton<String>(
-                segments: const [
+                segments: [
                   ButtonSegment<String>(
                     value: 'visual',
-                    label: Text('Card Selection'),
-                    icon: Icon(Icons.credit_card),
+                    label: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.style, size: 20),
+                        SizedBox(height: 4),
+                        Text('Card\nSelection', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
                   ),
                   ButtonSegment<String>(
                     value: 'basic',
-                    label: Text('Basic Input'),
-                    icon: Icon(Icons.list),
+                    label: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.list, size: 20),
+                        SizedBox(height: 4),
+                        Text('Basic\nInput', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
                   ),
                   ButtonSegment<String>(
                     value: 'quick',
-                    label: Text('Quick Total'),
-                    icon: Icon(Icons.speed),
+                    label: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.speed, size: 20),
+                        SizedBox(height: 4),
+                        Text('Quick\nTotal', textAlign: TextAlign.center, style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
                   ),
                 ],
                 selected: {widget.entryMethod},
                 onSelectionChanged: (Set<String> selected) {
                   widget.onEntryMethodChanged(selected.first);
                 },
+                style: ButtonStyle(
+                  padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 8, horizontal: 12)),
+                ),
               ),
               const SizedBox(height: 8),
               if (widget.entryMethod == 'visual') ...[
@@ -275,69 +311,120 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 const SizedBox(height: 16),
                 const Text('Additional Scoring:', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                if (widget.separatePointTokens)
-                  TextField(
-                    controller: widget.pointTokensController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      labelText: 'Point Tokens',
-                      border: OutlineInputBorder(),
+                Row(
+                  children: [
+                    if (widget.separatePointTokens) ...[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Point Tokens', style: TextStyle(fontSize: 12)),
+                            const SizedBox(height: 4),
+                            TextField(
+                              controller: widget.pointTokensController,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: '0',
+                              ),
+                              onChanged: (_) => widget.onChanged(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Basic Events (count)', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.basicEventsController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
+                      ),
                     ),
-                    onChanged: (_) => widget.onChanged(),
-                  ),
-                if (widget.separatePointTokens) const SizedBox(height: 8),
-                TextField(
-                  controller: widget.basicEventsController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Basic Events (count)',
-                    border: OutlineInputBorder(),
-                    helperText: 'x3 points each',
-                  ),
-                  onChanged: (_) => widget.onChanged(),
+                    if (!widget.separatePointTokens) const Spacer(),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: widget.specialEventsCountController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Special Events (count)',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Special Events (count)', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.specialEventsCountController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: TextField(
-                        controller: widget.specialEventsController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Special Events (points)',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Special Events (points)', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.specialEventsController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                TextField(
-                  controller: widget.journeyPointsController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Journey Points',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => widget.onChanged(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Journey Points', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.journeyPointsController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 const Text('Leftover Resources:', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -345,28 +432,42 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: widget.berriesController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Berries',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Berries', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.berriesController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: TextField(
-                        controller: widget.resinController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Resin',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Resin', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.resinController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -375,28 +476,42 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: widget.pebblesController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Pebbles',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Pebbles', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.pebblesController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: TextField(
-                        controller: widget.woodController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: const InputDecoration(
-                          labelText: 'Wood/Twigs',
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (_) => widget.onChanged(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Wood/Twigs', style: TextStyle(fontSize: 12)),
+                          const SizedBox(height: 4),
+                          TextField(
+                            controller: widget.woodController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: '0',
+                            ),
+                            onChanged: (_) => widget.onChanged(),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -404,15 +519,22 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 const SizedBox(height: 8),
               ],
               if (widget.entryMethod == 'quick')
-                TextField(
-                  controller: widget.totalController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: const InputDecoration(
-                    labelText: 'Total Score',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => widget.onChanged(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Total Score', style: TextStyle(fontSize: 12)),
+                    const SizedBox(height: 4),
+                    TextField(
+                      controller: widget.totalController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter total score',
+                      ),
+                      onChanged: (_) => widget.onChanged(),
+                    ),
+                  ],
                 )
               else if (widget.entryMethod == 'basic')
                 ScoreBreakdownForm(

@@ -36,7 +36,7 @@ class _StatsScreenState extends State<StatsScreen> {
       body: playerNames.isEmpty
           ? const Center(child: Text('No players yet.'))
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
               children: [
                 // Overall stats card
                 _buildOverallStatsCard(filteredGames, playerNames),

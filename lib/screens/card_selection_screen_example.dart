@@ -756,6 +756,7 @@ class _CardSelectionScreenExampleState
     
     return Expanded(
       child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 80),
               itemCount: CardColor.values.length,
               itemBuilder: (context, sectionIndex) {
                 final color = CardColor.values[sectionIndex];

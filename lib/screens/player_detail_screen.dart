@@ -32,7 +32,7 @@ class PlayerDetailScreen extends StatelessWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
         children: [
           // Date range indicator
           _buildDateRangeChip(dateText),

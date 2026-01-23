@@ -10,7 +10,7 @@ services:
       # Build web app
       flutter doctor
       flutter pub get
-      flutter build web --release --web-renderer canvaskit
+      flutter build web --release
     staticPublishPath: build/web
     routes:
       - type: rewrite

@@ -8,6 +8,10 @@ on:
       - '**.md'
       - '.github/**'
       - '!.github/workflows/android-release.yml'
+      - 'web/**'
+      - 'render.yaml'
+      - 'lib/widgets/pdf_viewer_web.dart'
+      - 'lib/widgets/pdf_viewer_stub.dart'
 
 jobs:
   build:

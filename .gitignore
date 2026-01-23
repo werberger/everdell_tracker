@@ -49,3 +49,6 @@ app.*.map.json
 /android/app/*.jks
 /android/app/*.keystore
 keystore-base64.txt
+
+# other
+deploy_logs.txt

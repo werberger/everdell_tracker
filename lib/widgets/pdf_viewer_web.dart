@@ -1,9 +1,8 @@
-// Web-specific PDF viewer using iframe
+// Web-specific PDF viewer - opens PDF in new window
 import 'dart:html' as html;
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
-class PdfViewerWeb extends StatefulWidget {
+class PdfViewerWeb extends StatelessWidget {
   final String assetPath;
 
   const PdfViewerWeb({
@@ -12,47 +11,46 @@ class PdfViewerWeb extends StatefulWidget {
   });
 
   @override
-  State<PdfViewerWeb> createState() => _PdfViewerWebState();
-}
-
-class _PdfViewerWebState extends State<PdfViewerWeb> {
-  static int _iframeCounter = 0;
-  late final String _iframeId;
-
-  @override
-  void initState() {
-    super.initState();
-    _iframeId = 'pdf-iframe-${_iframeCounter++}';
-    _registerIframe();
-  }
-
-  void _registerIframe() {
+  Widget build(BuildContext context) {
     // Convert asset path to web-accessible URL
     // Assets are served from the root, so 'assets/images/file.pdf' becomes '/assets/images/file.pdf'
-    final pdfUrl = widget.assetPath.startsWith('/') 
-        ? widget.assetPath 
-        : '/${widget.assetPath}';
+    final pdfUrl = assetPath.startsWith('/') 
+        ? assetPath 
+        : '/$assetPath';
     
-    // Create iframe element
-    final iframe = html.IFrameElement()
-      ..src = pdfUrl
-      ..style.border = 'none'
-      ..style.width = '100%'
-      ..style.height = '100%';
-
-    // Register the platform view
-    ui.platformViewRegistry.registerViewFactory(
-      _iframeId,
-      (int viewId) => iframe,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: double.infinity,
-      child: HtmlElementView(viewType: _iframeId),
+    // Open PDF in new window/tab
+    html.window.open(pdfUrl, '_blank');
+    
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.picture_as_pdf,
+            size: 64,
+            color: Colors.grey,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Opening PDF in new window...',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'If the PDF didn\'t open, click the button below',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => html.window.open(pdfUrl, '_blank'),
+            icon: const Icon(Icons.open_in_new),
+            label: const Text('Open PDF'),
+          ),
+        ],
+      ),
     );
   }
 }

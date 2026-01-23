@@ -300,39 +300,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _importGames() async {
-    final json = await ExportService.pickImportFile();
-    if (json == null) {
-      return;
-    }
-
-    final gameProvider = context.read<GameProvider>();
-    final existing = gameProvider.games;
-    final result = ExportService.parseImport(json, existing);
-    final toAdd = <Game>[...result.newGames];
-
-    if (result.duplicates.isNotEmpty) {
-      final strategy = await _askMergeStrategy();
-      if (strategy == null) {
+    try {
+      final json = await ExportService.pickImportFile();
+      if (json == null) {
         return;
       }
-      toAdd.addAll(ExportService.mergeDuplicates(result.duplicates, strategy));
-    }
 
-    if (toAdd.isEmpty) {
-      _showSnack('No new games to import.');
-      return;
-    }
+      final gameProvider = context.read<GameProvider>();
+      final existing = gameProvider.games;
+      final result = ExportService.parseImport(json, existing);
+      final toAdd = <Game>[...result.newGames];
 
-    await gameProvider.addGames(toAdd);
-
-    final playerProvider = context.read<PlayerProvider>();
-    for (final game in toAdd) {
-      for (final player in game.players) {
-        await playerProvider.addPlayerName(player.playerName);
+      if (result.duplicates.isNotEmpty) {
+        final strategy = await _askMergeStrategy();
+        if (strategy == null) {
+          return;
+        }
+        toAdd.addAll(ExportService.mergeDuplicates(result.duplicates, strategy));
       }
-    }
 
-    _showSnack('Imported ${toAdd.length} games.');
+      if (toAdd.isEmpty) {
+        _showSnack('No new games to import.');
+        return;
+      }
+
+      await gameProvider.addGames(toAdd);
+
+      final playerProvider = context.read<PlayerProvider>();
+      for (final game in toAdd) {
+        for (final player in game.players) {
+          await playerProvider.addPlayerName(player.playerName);
+        }
+      }
+
+      _showSnack('Imported ${toAdd.length} games.');
+    } catch (e) {
+      _showSnack('Error importing games: $e');
+    }
   }
 
   Future<MergeStrategy?> _askMergeStrategy() async {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -51,11 +52,21 @@ class ExportService {
     if (result == null || result.files.isEmpty) {
       return null;
     }
-    final filePath = result.files.single.path;
-    if (filePath == null) {
-      return null;
+    
+    // Web: use bytes, Mobile: use path
+    if (kIsWeb) {
+      final bytes = result.files.single.bytes;
+      if (bytes == null) {
+        return null;
+      }
+      return utf8.decode(bytes);
+    } else {
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        return null;
+      }
+      return File(filePath).readAsString();
     }
-    return File(filePath).readAsString();
   }
 
   static ImportResult parseImport(String json, List<Game> existingGames) {

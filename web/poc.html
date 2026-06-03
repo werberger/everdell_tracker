@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Everdell — Budgit API POC</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
+    pre { background: #f4f4f4; padding: 1rem; overflow: auto; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+    .hint { color: #555; font-size: 0.9rem; }
+    .err { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Everdell ↔ Budgit cookie test</h1>
+  <p class="hint">
+    Log in at <a href="https://budgit.lol/login">budgit.lol</a> first, then open this page on
+    <strong>everdell.budgit.lol</strong>.
+  </p>
+  <button id="fetchBtn" type="button">Fetch my groups</button>
+  <p id="status"></p>
+  <pre id="out">(no response yet)</pre>
+
+  <script>
+    const API = 'https://budgit.lol/api/everdell/groups/';
+    const statusEl = document.getElementById('status');
+    const outEl = document.getElementById('out');
+
+    document.getElementById('fetchBtn').addEventListener('click', async () => {
+      statusEl.textContent = 'Loading…';
+      statusEl.className = '';
+      outEl.textContent = '';
+      try {
+        const res = await fetch(API, { credentials: 'include' });
+        const text = await res.text();
+        let body;
+        try { body = JSON.parse(text); } catch { body = text; }
+        statusEl.textContent = 'HTTP ' + res.status;
+        if (!res.ok) statusEl.className = 'err';
+        outEl.textContent = typeof body === 'string' ? body : JSON.stringify(body, null, 2);
+      } catch (e) {
+        statusEl.textContent = 'Network error';
+        statusEl.className = 'err';
+        outEl.textContent = String(e);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
+import '../../models/everdell_game_record.dart';
 import '../../models/everdell_group.dart';
+import '../../models/everdell_player.dart';
 import '../../models/everdell_profile.dart';
+import '../../models/game.dart';
 import 'everdell_api_config.dart';
 import 'everdell_api_exception.dart';
 import 'everdell_http_client.dart';
@@ -142,6 +145,103 @@ class EverdellApiService {
     );
     final body = await _decodeResponse(response);
     return EverdellGroup.fromJson(body as Map<String, dynamic>);
+  }
+
+  Future<List<EverdellPlayer>> listPlayers(String groupId) async {
+    final response = await _client.get(
+      Uri.parse('$_root/groups/$groupId/players/'),
+      headers: await _headers(),
+    );
+    final body = await _decodeResponse(response);
+    final list = body as List<dynamic>;
+    return list
+        .map((item) => EverdellPlayer.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<EverdellPlayer> createPlayer(
+    String groupId, {
+    required String name,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$_root/groups/$groupId/players/'),
+      headers: await _headers(jsonBody: true),
+      body: json.encode({'name': name.trim()}),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellPlayer.fromJson(body as Map<String, dynamic>);
+  }
+
+  Future<List<String>> listGameIds(String groupId) async {
+    final response = await _client.get(
+      Uri.parse('$_root/groups/$groupId/games/'),
+      headers: await _headers(),
+    );
+    final body = await _decodeResponse(response);
+    final list = body as List<dynamic>;
+    return list
+        .map((item) => (item as Map<String, dynamic>)['id'] as String)
+        .toList();
+  }
+
+  Future<EverdellGameRecord> getGame(String groupId, String gameId) async {
+    final response = await _client.get(
+      Uri.parse('$_root/groups/$groupId/games/$gameId/'),
+      headers: await _headers(),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellGameRecord.fromDetailJson(body as Map<String, dynamic>);
+  }
+
+  Future<List<EverdellGameRecord>> listGames(String groupId) async {
+    final ids = await listGameIds(groupId);
+    if (ids.isEmpty) {
+      return [];
+    }
+    final records = await Future.wait(
+      ids.map((id) => getGame(groupId, id)),
+    );
+    records.sort((a, b) => b.game.dateTime.compareTo(a.game.dateTime));
+    return records;
+  }
+
+  Future<EverdellGameRecord> createGame(String groupId, Game game) async {
+    final response = await _client.post(
+      Uri.parse('$_root/groups/$groupId/games/'),
+      headers: await _headers(jsonBody: true),
+      body: json.encode({
+        'id': game.id,
+        'payload': game.toJson(),
+      }),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellGameRecord.fromDetailJson(body as Map<String, dynamic>);
+  }
+
+  Future<EverdellGameRecord> updateGame(
+    String groupId,
+    String gameId,
+    DateTime updatedAt,
+    Game game,
+  ) async {
+    final response = await _client.put(
+      Uri.parse('$_root/groups/$groupId/games/$gameId/'),
+      headers: await _headers(jsonBody: true),
+      body: json.encode({
+        'updated_at': updatedAt.toUtc().toIso8601String(),
+        'payload': game.toJson(),
+      }),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellGameRecord.fromDetailJson(body as Map<String, dynamic>);
+  }
+
+  Future<void> deleteGame(String groupId, String gameId) async {
+    final response = await _client.delete(
+      Uri.parse('$_root/groups/$groupId/games/$gameId/'),
+      headers: await _headers(),
+    );
+    await _decodeResponse(response);
   }
 
   void dispose() {

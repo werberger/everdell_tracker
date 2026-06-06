@@ -39,10 +39,14 @@ class EverdellApp extends StatelessWidget {
           create: (_) => SettingsProvider()..loadSettings(),
         ),
         ChangeNotifierProvider(
-          create: (_) => GameProvider()..loadGames(),
+          create: (context) => GameProvider(
+            api: context.read<EverdellApiService>(),
+          ),
         ),
         ChangeNotifierProvider(
-          create: (_) => PlayerProvider()..loadPlayerNames(),
+          create: (context) => PlayerProvider(
+            api: context.read<EverdellApiService>(),
+          ),
         ),
       ],
       child: Consumer<SettingsProvider>(

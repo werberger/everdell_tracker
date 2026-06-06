@@ -8,8 +8,10 @@ import '../models/everdell_card.dart';
 import '../models/game.dart';
 import '../models/player_score.dart';
 import '../providers/game_provider.dart';
+import '../providers/online_session_provider.dart';
 import '../providers/player_provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/everdell_api/everdell_api_exception.dart';
 import '../screens/card_selection_screen_example.dart';
 import '../services/card_service.dart';
 import '../utils/score_calculator.dart';
@@ -69,7 +71,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
   void _addPlayer() {
     setState(() {
-      _players.add(_PlayerEntry(id: _uuid.v4())..entryMethod = 'visual'); // Default to visual
+      _players.add(_PlayerEntry()..entryMethod = 'visual');
     });
   }
 
@@ -137,7 +139,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
     setState(() {
       _players.remove(entry);
       entry.dispose();
-      _winnerIds.remove(entry.id);
+      _winnerIds.remove(entry.playerId);
     });
   }
 
@@ -152,7 +154,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
     // Calculate other players' event counts for Rugwort
     int otherPlayersEventCount = 0;
     for (final otherEntry in _players) {
-      if (otherEntry.id != entry.id) {
+      if (otherEntry.rowId != entry.rowId) {
         final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
         final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
         otherPlayersEventCount += basicEvents + specialEventsCount;
@@ -187,7 +189,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
       // Calculate other players' event counts for Rugwort
       int otherPlayersEventCount = 0;
       for (final otherEntry in _players) {
-        if (otherEntry.id != entry.id) {
+        if (otherEntry.rowId != entry.rowId) {
           final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
           final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
           otherPlayersEventCount += basicEvents + specialEventsCount;
@@ -280,6 +282,12 @@ class _NewGameScreenState extends State<NewGameScreen> {
       return;
     }
 
+    final groupId = context.read<OnlineSessionProvider>().activeGroup?.id;
+    if (groupId == null) {
+      _showSnack('No scorebook selected.');
+      return;
+    }
+
     final settings = context.read<SettingsProvider>();
     final gameProvider = context.read<GameProvider>();
     final playerProvider = context.read<PlayerProvider>();
@@ -291,32 +299,48 @@ class _NewGameScreenState extends State<NewGameScreen> {
       }
     }
 
-    final scores = <PlayerScore>[];
+    final idMap = <String, String>{};
     for (final entry in _players) {
       final name = entry.nameController.text.trim();
       if (name.isEmpty) {
         _showSnack('Each player needs a name.');
         return;
       }
+      final previousId = entry.playerId;
+      final rosterPlayer = await playerProvider.ensurePlayer(groupId, name);
+      entry.playerId = rosterPlayer.id;
+      entry.displayName = rosterPlayer.displayName;
+      idMap[previousId] = rosterPlayer.id;
+    }
+
+    final winnerIds = _winnerIds
+        .map((id) => idMap[id] ?? id)
+        .toSet()
+        .toList();
+
+    final scores = <PlayerScore>[];
+    for (final entry in _players) {
       if (entry.entryMethod == 'quick' && entry.quickTotal == null) {
         _showSnack('Enter a total score for each quick entry player.');
         return;
       }
-      
-      // Calculate other players' event counts for Rugwort
+
       int otherPlayersEventCount = 0;
       for (final otherEntry in _players) {
-        if (otherEntry.id != entry.id && otherEntry.nameController.text.trim().isNotEmpty) {
-          final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
-          final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
+        if (otherEntry.rowId != entry.rowId &&
+            otherEntry.nameController.text.trim().isNotEmpty) {
+          final basicEvents =
+              int.tryParse(otherEntry.basicEventsController.text) ?? 0;
+          final specialEventsCount =
+              int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
           otherPlayersEventCount += basicEvents + specialEventsCount;
         }
       }
-      
+
       scores.add(
         entry.buildScore(
           autoConvertResources: settings.autoConvertResources,
-          isWinner: _winnerIds.contains(entry.id),
+          isWinner: winnerIds.contains(entry.playerId),
           otherPlayersEventCount: otherPlayersEventCount,
         ),
       );
@@ -330,22 +354,62 @@ class _NewGameScreenState extends State<NewGameScreen> {
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
-      winnerIds: List<String>.from(_winnerIds),
+      winnerIds: winnerIds,
     );
 
-    if (_editingGameId == null) {
-      await gameProvider.addGame(game);
-    } else {
-      await gameProvider.updateGame(game);
-    }
-    for (final entry in _players) {
-      await playerProvider.addPlayerName(entry.nameController.text);
+    try {
+      if (_editingGameId == null) {
+        await gameProvider.addGame(groupId, game);
+      } else {
+        await gameProvider.updateGame(groupId, game);
+      }
+    } on EverdellConflictException catch (e) {
+      if (!mounted) {
+        return;
+      }
+      final refresh = await _showConflictDialog(e.message);
+      if (refresh == true && e.current != null) {
+        gameProvider.applyRemoteGame(e.current!);
+        if (mounted) {
+          Navigator.of(context).pop();
+          _showSnack('Loaded the latest version from the server.');
+        }
+      }
+      return;
+    } on EverdellApiException catch (e) {
+      if (!mounted) {
+        return;
+      }
+      _showSnack(e.message);
+      return;
     }
 
     if (!mounted) {
       return;
     }
     Navigator.of(context).pop();
+  }
+
+  Future<bool?> _showConflictDialog(String message) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Save conflict'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Refresh'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showSnack(String message) {
@@ -419,7 +483,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
   List<String> _winnerNames() {
     return _players
-        .where((entry) => _winnerIds.contains(entry.id))
+        .where((entry) => _winnerIds.contains(entry.playerId))
         .map((entry) => entry.nameController.text.trim())
         .where((name) => name.isNotEmpty)
         .toList();
@@ -488,6 +552,13 @@ class _NewGameScreenState extends State<NewGameScreen> {
               index: _players.indexOf(entry),
               nameController: entry.nameController,
               playerSuggestions: playerNames,
+              onSuggestionSelected: (value) {
+                final player = context.read<PlayerProvider>().findByDisplayName(value);
+                if (player != null) {
+                  entry.playerId = player.id;
+                  entry.displayName = player.displayName;
+                }
+              },
               isQuickEntry: entry.entryMethod == 'quick',
               onQuickEntryChanged: (value) {
                 setState(() {
@@ -578,7 +649,10 @@ class _NewGameScreenState extends State<NewGameScreen> {
 }
 
 class _PlayerEntry {
-  final String id;
+  final String rowId;
+  String playerId;
+  String? displayName;
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController totalController = TextEditingController();
   final TextEditingController pointTokensController = TextEditingController();
@@ -624,11 +698,18 @@ class _PlayerEntry {
   int? visualCardScore; // Store the base card score (without events/journey)
   int? visualScore; // Store the total calculated score from card selection
 
-  _PlayerEntry({required this.id});
+  _PlayerEntry._({required this.rowId, required this.playerId});
+
+  factory _PlayerEntry({String? playerId}) {
+    final rowId = const Uuid().v4();
+    return _PlayerEntry._(rowId: rowId, playerId: playerId ?? rowId);
+  }
 
   factory _PlayerEntry.fromScore(PlayerScore score) {
-    final entry = _PlayerEntry(id: score.playerId)
+    final rowId = const Uuid().v4();
+    final entry = _PlayerEntry._(rowId: rowId, playerId: score.playerId)
       ..nameController.text = score.playerName
+      ..displayName = score.playerName
       ..isQuickEntry = score.isQuickEntry
       ..selectedCardCounts = score.selectedCardIds != null 
           ? {for (var id in score.selectedCardIds!) id: 1} // Simplified for now
@@ -694,8 +775,8 @@ class _PlayerEntry {
   }) {
     final tiebreakerResources = _resourceTotal();
     final baseScore = PlayerScore(
-      playerId: id,
-      playerName: nameController.text.trim(),
+      playerId: playerId,
+      playerName: displayName ?? nameController.text.trim(),
       pointTokens: _parse(pointTokensController),
       cardPoints: _parse(cardPointsController),
       basicEvents: _parse(basicEventsController),

@@ -88,8 +88,15 @@ Create a service responsible for all Budgit API communication:
 - [x] Login screen + session restore
 - [x] Group picker (create, join, select)
 - [x] Settings: sign out, change scorebook
-- [ ] Game list/save to API (Phase 2b)
-- [ ] Roster UUIDs in payloads (Phase 2b)
+
+## Implemented (Phase 2b)
+
+- [x] `EverdellApiService` games + roster (`listGames`, `getGame`, `createGame`, `updateGame`, `deleteGame`, `listPlayers`, `createPlayer`)
+- [x] `GameProvider` / `PlayerProvider` backed by API for active scorebook
+- [x] `ScorebookLoaderScreen` — loads games + roster after group select
+- [x] Roster autocomplete uses `display_name`; game payloads store player UUIDs
+- [x] New players auto-created on save via `POST .../players/`
+- [x] 409 conflict dialog with refresh from server `current` body
 - [ ] Offline pending queue (Phase 2c)
 
 ## Testing checklist (Flutter)

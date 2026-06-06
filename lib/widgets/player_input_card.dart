@@ -9,6 +9,7 @@ class PlayerInputCard extends StatefulWidget {
   final int index;
   final TextEditingController nameController;
   final List<String> playerSuggestions;
+  final ValueChanged<String>? onSuggestionSelected;
   final bool isQuickEntry;
   final ValueChanged<bool> onQuickEntryChanged;
   final TextEditingController totalController;
@@ -54,6 +55,7 @@ class PlayerInputCard extends StatefulWidget {
     required this.index,
     required this.nameController,
     required this.playerSuggestions,
+    this.onSuggestionSelected,
     required this.isQuickEntry,
     required this.onQuickEntryChanged,
     required this.totalController,
@@ -186,6 +188,7 @@ class _PlayerInputCardState extends State<PlayerInputCard> {
                 },
                 onSelected: (value) {
                   widget.nameController.text = value;
+                  widget.onSuggestionSelected?.call(value);
                   widget.onChanged();
                 },
                 fieldViewBuilder: (context, controller, focusNode, onSubmit) {

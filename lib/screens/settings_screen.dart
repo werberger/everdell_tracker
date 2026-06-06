@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../models/app_settings.dart';
 import '../providers/auth_provider.dart';
+import '../providers/game_provider.dart';
 import '../providers/online_session_provider.dart';
+import '../providers/player_provider.dart';
 import '../providers/settings_provider.dart';
 import 'app_gate_screen.dart';
 
@@ -35,6 +37,8 @@ class SettingsScreen extends StatelessWidget {
               leading: const Icon(Icons.groups_outlined),
               title: const Text('Change scorebook'),
               onTap: () async {
+                context.read<GameProvider>().clearGames();
+                context.read<PlayerProvider>().clearRoster();
                 await session.clearActiveGroup();
                 if (!context.mounted) return;
                 Navigator.of(context).pushAndRemoveUntil(
@@ -47,6 +51,8 @@ class SettingsScreen extends StatelessWidget {
               leading: const Icon(Icons.logout),
               title: const Text('Sign out'),
               onTap: () async {
+                context.read<GameProvider>().clearGames();
+                context.read<PlayerProvider>().clearRoster();
                 await session.clearActiveGroup();
                 await auth.logout();
                 if (!context.mounted) return;

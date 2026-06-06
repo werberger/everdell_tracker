@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 
 import '../models/expansion.dart';
 import '../models/game.dart';
+import '../models/player_score.dart';
 import '../providers/game_provider.dart';
+import '../providers/online_session_provider.dart';
 import '../providers/player_provider.dart';
+import '../services/everdell_api/everdell_api_exception.dart';
 import '../services/export_service.dart';
 import '../widgets/expansion_selector.dart';
 import '../widgets/game_card.dart';
@@ -140,7 +143,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     return await _confirmDelete(game);
                   },
                   onDismissed: (_) async {
-                    await context.read<GameProvider>().deleteGame(game.id);
+                    final groupId =
+                        context.read<OnlineSessionProvider>().activeGroup?.id;
+                    if (groupId == null) {
+                      return;
+                    }
+                    try {
+                      await context
+                          .read<GameProvider>()
+                          .deleteGame(groupId, game.id);
+                    } on EverdellApiException catch (e) {
+                      _showSnack(e.message);
+                    }
                   },
                   child: GameCard(
                     game: game,
@@ -324,14 +338,43 @@ class _HistoryScreenState extends State<HistoryScreen> {
         return;
       }
 
-      await gameProvider.addGames(toAdd);
+      final groupId = context.read<OnlineSessionProvider>().activeGroup?.id;
+      if (groupId == null) {
+        _showSnack('No scorebook selected.');
+        return;
+      }
 
       final playerProvider = context.read<PlayerProvider>();
+      final remappedGames = <Game>[];
       for (final game in toAdd) {
+        final idMap = <String, String>{};
+        final remappedPlayers = <PlayerScore>[];
         for (final player in game.players) {
-          await playerProvider.addPlayerName(player.playerName);
+          final roster =
+              await playerProvider.ensurePlayer(groupId, player.playerName);
+          idMap[player.playerId] = roster.id;
+          remappedPlayers.add(
+            player.copyWith(
+              playerId: roster.id,
+              playerName: roster.displayName,
+            ),
+          );
         }
+        remappedGames.add(
+          Game(
+            id: game.id,
+            dateTime: game.dateTime,
+            expansionsUsed: game.expansionsUsed,
+            players: remappedPlayers,
+            notes: game.notes,
+            winnerIds: game.winnerIds
+                .map((winnerId) => idMap[winnerId] ?? winnerId)
+                .toList(),
+          ),
+        );
       }
+
+      await gameProvider.addGames(groupId, remappedGames);
 
       _showSnack('Imported ${toAdd.length} games.');
     } catch (e) {

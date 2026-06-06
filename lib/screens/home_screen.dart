@@ -6,7 +6,6 @@ import 'history_screen.dart';
 import 'new_game_screen.dart';
 import 'settings_screen.dart';
 import 'stats_screen.dart';
-import 'card_selection_screen_example.dart';
 import 'rulebook_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
@@ -73,18 +72,19 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-            if (profile != null)
+            if (profile != null && session.activeGroup != null)
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(
                     'Signed in as ${profile.displayName}. '
-                    'Game sync to the server is coming next — scores are still stored on this device for now.',
+                    'Games sync to ${session.activeGroup!.name} on Budgit.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
               ),
-            if (profile != null) const SizedBox(height: 12),
+            if (profile != null && session.activeGroup != null)
+              const SizedBox(height: 12),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).push(

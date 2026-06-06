@@ -6,6 +6,8 @@ import '../models/expansion.dart';
 import '../models/game.dart';
 import '../models/player_score.dart';
 import '../providers/game_provider.dart';
+import '../providers/online_session_provider.dart';
+import '../services/everdell_api/everdell_api_exception.dart';
 import 'new_game_screen.dart';
 
 class GameDetailScreen extends StatelessWidget {
@@ -149,7 +151,22 @@ class GameDetailScreen extends StatelessWidget {
     if (!confirm || !context.mounted) {
       return;
     }
-    await context.read<GameProvider>().deleteGame(game.id);
+    final groupId = context.read<OnlineSessionProvider>().activeGroup?.id;
+    if (groupId == null) {
+      return;
+    }
+
+    try {
+      await context.read<GameProvider>().deleteGame(groupId, game.id);
+    } on EverdellApiException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
+      return;
+    }
+
     if (context.mounted) {
       Navigator.of(context).pop();
     }

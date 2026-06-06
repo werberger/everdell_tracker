@@ -184,6 +184,47 @@ class PlayerScore extends HiveObject {
     };
   }
 
+  PlayerScore copyWith({
+    String? playerId,
+    String? playerName,
+  }) {
+    return PlayerScore(
+      playerId: playerId ?? this.playerId,
+      playerName: playerName ?? this.playerName,
+      pointTokens: pointTokens,
+      cardPoints: cardPoints,
+      basicEvents: basicEvents,
+      specialEvents: specialEvents,
+      prosperityPoints: prosperityPoints,
+      journeyPoints: journeyPoints,
+      leftoverBerries: leftoverBerries,
+      leftoverResin: leftoverResin,
+      leftoverPebbles: leftoverPebbles,
+      leftoverWood: leftoverWood,
+      pearlPoints: pearlPoints,
+      wonderPoints: wonderPoints,
+      weatherPoints: weatherPoints,
+      garlandPoints: garlandPoints,
+      ticketPoints: ticketPoints,
+      totalScore: totalScore,
+      tiebreakerResources: tiebreakerResources,
+      isWinner: isWinner,
+      isQuickEntry: isQuickEntry,
+      playerOrder: playerOrder,
+      startingCards: startingCards,
+      constructionPoints: constructionPoints,
+      critterPoints: critterPoints,
+      productionPoints: productionPoints,
+      destinationPoints: destinationPoints,
+      governancePoints: governancePoints,
+      travellerPoints: travellerPoints,
+      prosperityCardPoints: prosperityCardPoints,
+      selectedCardIds: selectedCardIds,
+      cardTokenCounts: cardTokenCounts,
+      cardResourceCounts: cardResourceCounts,
+    );
+  }
+
   factory PlayerScore.fromJson(Map<String, dynamic> json) {
     return PlayerScore(
       playerId: json['playerId'],

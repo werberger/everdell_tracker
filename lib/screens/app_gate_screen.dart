@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/online_session_provider.dart';
 import 'group_picker_screen.dart';
-import 'home_screen.dart';
 import 'login_screen.dart';
+import 'scorebook_loader_screen.dart';
 
 class AppGateScreen extends StatefulWidget {
   const AppGateScreen({super.key});
@@ -50,6 +50,6 @@ class _AppGateScreenState extends State<AppGateScreen> {
       return const GroupPickerScreen();
     }
 
-    return const HomeScreen();
+    return const ScorebookLoaderScreen();
   }
 }

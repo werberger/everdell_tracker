@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/app_settings.dart';
+import '../providers/auth_provider.dart';
+import '../providers/online_session_provider.dart';
 import '../providers/settings_provider.dart';
+import 'app_gate_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -10,6 +13,8 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
+    final auth = context.watch<AuthProvider>();
+    final session = context.watch<OnlineSessionProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -17,6 +22,42 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          if (auth.profile != null) ...[
+            ListTile(
+              title: Text(auth.profile!.displayName),
+              subtitle: Text(
+                session.activeGroup != null
+                    ? 'Scorebook: ${session.activeGroup!.name}'
+                    : 'No scorebook selected',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.groups_outlined),
+              title: const Text('Change scorebook'),
+              onTap: () async {
+                await session.clearActiveGroup();
+                if (!context.mounted) return;
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const AppGateScreen()),
+                  (_) => false,
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sign out'),
+              onTap: () async {
+                await session.clearActiveGroup();
+                await auth.logout();
+                if (!context.mounted) return;
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const AppGateScreen()),
+                  (_) => false,
+                );
+              },
+            ),
+            const Divider(),
+          ],
           SwitchListTile(
             title: const Text('Separate Point Tokens'),
             subtitle: const Text('Track point tokens separately from cards'),

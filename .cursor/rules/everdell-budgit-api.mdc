@@ -1,0 +1,16 @@
+---
+description: Everdell Tracker uses Budgit API on www.budgit.lol
+alwaysApply: true
+---
+Everdell online mode calls the Budgit Django API (separate repo).
+Before implementing API clients:
+- Read `docs/budgit-api/EVERDELL_PHASE1_API.md`
+- Read `docs/budgit-api/EVERDELL_PLAYER_ACCOUNTS.md`
+- Read `docs/BUDGIT_EVERDELL_INTEGRATION_PLAN.md` for phase status
+Rules:
+- Base URL: `https://www.budgit.lol` (not apex `budgit.lol`)
+- Auth: Everdell-only — `POST /api/everdell/token/cookie/` then `credentials: 'include'` (uses `everdell_access_token`, not Budgit budget cookies)
+- Roster UI: show `display_name` and `display_avatar_url`, not raw `name` when linked
+- Game payloads: use player UUIDs from API
+- Phase 2 scope: Flutter only — do not change Budgit backend from this repo
+

@@ -8,7 +8,9 @@ import 'settings_screen.dart';
 import 'stats_screen.dart';
 import 'card_selection_screen_example.dart';
 import 'rulebook_screen.dart';
+import '../providers/auth_provider.dart';
 import '../providers/game_provider.dart';
+import '../providers/online_session_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,6 +18,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final games = context.watch<GameProvider>().games;
+    final session = context.watch<OnlineSessionProvider>();
+    final profile = context.watch<AuthProvider>().profile;
     final latestGame = games.isEmpty
         ? null
         : (List.of(games)
@@ -33,7 +37,17 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Everdell Tracker'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Everdell Tracker'),
+            if (session.activeGroup != null)
+              Text(
+                session.activeGroup!.name,
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -59,6 +73,18 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+            if (profile != null)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    'Signed in as ${profile.displayName}. '
+                    'Game sync to the server is coming next — scores are still stored on this device for now.',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ),
+            if (profile != null) const SizedBox(height: 12),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).push(

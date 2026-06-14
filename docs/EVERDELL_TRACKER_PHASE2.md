@@ -99,14 +99,87 @@ Create a service responsible for all Budgit API communication:
 - [x] 409 conflict dialog with refresh from server `current` body
 - [ ] Offline pending queue (Phase 2c)
 
-## Testing checklist (Flutter)
+## Implemented (Phase 2 UX / hosting)
 
-- Logged out:
-  - Opening online mode triggers login gate (no silent failures).
-- Logged in:
-  - Group list loads.
-  - Create/join group works.
-  - Players list loads; UI shows `display_name` + `display_avatar_url`.
-  - Games list loads; create works; update works.
-  - 409 flow shows correct UI and refresh behaviour.
+- [x] **Path migration:** Everdell moved from `everdell.budgit.lol` to `www.budgit.lol/everdell/`. No Flutter code changes needed — base URL stays `https://www.budgit.lol`. Same-domain means no CORS complexity.
+- [x] **PWA manifest:** `web/manifest.json` updated — `start_url: "/everdell/"`, `scope: "/everdell/"`, `display: "standalone"`. Flutter must be built with `--base-href=/everdell/` (handled by `scripts/build.sh` in budgit repo).
+- [x] **Separate app:** No Budgit nav link to Everdell. Each app accessed independently.
+- [x] **Build process:** `budgit/scripts/build.sh` installs Flutter, clones this repo, builds web with `--base-href=/everdell/`, copies output to `budgit/everdell_static/`.
+
+## Implementation notes (as built)
+
+### Auth (Phase 2a) — deliberate departures from original outline
+
+| Original plan | Actual implementation | Reasoning |
+|---------------|----------------------|-----------|
+| Redirect to Budgit budget login | Everdell PWA has its own login screen | Scoped JWT: budget and Everdell cookies are separate. Everdell users may have no budget tenant. |
+| Shared `.budgit.lol` session | `POST /api/everdell/token/cookie/` only | Security hardening on Budgit (`b699107`); Everdell must not use budget `access_token`. |
+
+**Key files:** `lib/screens/login_screen.dart`, `lib/providers/auth_provider.dart`, `lib/services/everdell_api/everdell_http_client_web.dart` (`withCredentials: true`).
+
+### Group + scorebook load (Phase 2a/2b)
+
+- Flow: `AppGateScreen` → login → `GroupPickerScreen` → `ScorebookLoaderScreen` → `HomeScreen`.
+- Active group persisted in `EverdellTokenStorage` (local only until server preferences API exists).
+- `ScorebookLoaderScreen` fetches games and roster in parallel; shows retry UI on failure.
+
+### Games API (Phase 2b)
+
+| Decision | Reasoning |
+|----------|-----------|
+| List games via `GET .../games/` then parallel `GET .../games/<id>/` for each | List endpoint returns summary fields only (no `payload`). Detail fetch is required for player names/scores in `GameCard`. Acceptable for household-scale scorebooks; optimise later if needed. |
+| `GameProvider` stores server `updated_at` per game id | Required for optimistic concurrency on `PUT`. |
+| `EverdellConflictException` → dialog → `applyRemoteGame(current)` → pop edit screen | Matches API 409 contract; avoids overwriting with stale form state. |
+| Import remaps player UUIDs via `ensurePlayer(name)` | Legacy JSON export used local random UUIDs; server expects roster UUIDs. |
+
+**Key files:** `lib/providers/game_provider.dart`, `lib/models/everdell_game_record.dart`, `lib/screens/new_game_screen.dart`, `lib/screens/history_screen.dart`.
+
+### Roster (Phase 2b)
+
+| Decision | Reasoning |
+|----------|-----------|
+| Autocomplete shows `display_name` from API | Per `EVERDELL_PLAYER_ACCOUNTS.md`; linked players may differ from raw `name`. |
+| `ensurePlayer` on save creates `POST .../players/` if name not in roster | Keeps game payloads aligned with server UUIDs without a separate “add player” screen. |
+| `display_avatar_url` not shown yet | Deferred to Phase 3 polish; names only in `PlayerInputCard` for now. |
+| `_PlayerEntry.rowId` vs `playerId` | UI winner selection uses stable row id during edit; `playerId` becomes roster UUID before save. |
+
+**Key files:** `lib/providers/player_provider.dart`, `lib/models/everdell_player.dart`, `lib/widgets/player_input_card.dart`.
+
+### Local storage
+
+- `PlatformStorageService` / Hive paths **not removed** — still used by export JSON shape and future Phase 2c offline queue.
+- Online session does not read/write games or roster to local storage.
+
+### Path migration + PWA (Phase 2 UX)
+
+| Decision | Reasoning |
+|----------|-----------|
+| `www.budgit.lol/everdell/` path (not subdomain) | Frees one Render custom domain slot. Same-origin removes CORS/blocked-origin complexity. |
+| Build via `budgit/scripts/build.sh` — `--base-href=/everdell/` | Required for Flutter to load assets from the correct path prefix. Handled outside this repo; no Flutter code changes. |
+| `start_url: "/everdell/"` + `scope: "/everdell/"` in manifest | Correct PWA scoping so the installed shortcut opens `/everdell/` and the browser scope doesn't bleed into Budgit routes. |
+| `display: "standalone"` in manifest | Opens chrome-free when added to home screen on iOS/Android. Same for Budgit at `/`. |
+| No nav link in Budgit | Budgit and Everdell Tracker are separate apps; linking would imply one is part of the other. |
+
+### Not implemented (Phase 2 scope gaps → Phase 3)
+
+- `patchMe()`, `patchPlayer()`, `listMyPlayers()`
+- Roster avatars in UI
+- Server-side last-active-group preference
+- `GET /api/everdell/games/mine/`
+
+## Testing
+
+See **`docs/EVERDELL_TRACKER_PHASE2_TESTING.md`** for the full checklist and pass/fail log.
+
+Quick status (June 2026):
+
+| Area | Status |
+|------|--------|
+| Phase 2a login + groups | ✅ user verified |
+| Phase 2b create/edit games | ✅ shipped; verify after deploy |
+| Phase 2b delete | ✅ wired to API |
+| Phase 2b import | ✅ wired; remap UUIDs |
+| 409 two-browser conflict | ⬜ recommended manual test |
+| `display_avatar_url` in UI | ⬜ deferred Phase 3 |
+| Offline / no network | ⬜ Phase 2c — fails or empty today |
 

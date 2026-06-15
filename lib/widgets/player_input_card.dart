@@ -102,7 +102,7 @@ class PlayerInputCard extends StatefulWidget {
 }
 
 class _PlayerInputCardState extends State<PlayerInputCard> {
-  bool _isExpanded = true;
+  bool _isExpanded = false;
 
   void _updateStartingCards() {
     final order = int.tryParse(widget.playerOrderController.text);

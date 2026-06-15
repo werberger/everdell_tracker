@@ -4,6 +4,24 @@ import 'package:flutter/services.dart';
 import '../models/app_settings.dart';
 import '../models/expansion.dart';
 
+/// Allows optional leading minus and digits only (empty and lone "-" while typing).
+class SignedIntegerInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final text = newValue.text;
+    if (text.isEmpty || text == '-') {
+      return newValue;
+    }
+    if (RegExp(r'^-?\d+$').hasMatch(text)) {
+      return newValue;
+    }
+    return oldValue;
+  }
+}
+
 class ScoreBreakdownForm extends StatefulWidget {
   final bool separatePointTokens;
   final bool autoConvertResources;
@@ -379,7 +397,7 @@ class _ScoreBreakdownFormState extends State<ScoreBreakdownForm> {
             controller: controller,
             keyboardType: const TextInputType.numberWithOptions(signed: true),
             inputFormatters: allowNegative
-                ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*'))]
+                ? [SignedIntegerInputFormatter()]
                 : [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
               border: OutlineInputBorder(

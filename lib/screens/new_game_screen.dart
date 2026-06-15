@@ -33,6 +33,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
   final List<_PlayerEntry> _players = [];
   final TextEditingController _notesController = TextEditingController();
   List<String> _winnerIds = [];
+  bool _winnersOverridden = false;
   String? _editingGameId;
   DateTime _gameDateTime = DateTime.now();
 
@@ -42,6 +43,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
     if (widget.game != null) {
       _loadExistingGame(widget.game!);
     } else {
+      _addPlayer();
       _addPlayer();
     }
   }
@@ -53,6 +55,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
       ..addAll(game.expansionsUsed);
     _notesController.text = game.notes ?? '';
     _winnerIds = List<String>.from(game.winnerIds);
+    _winnersOverridden = game.winnerIds.isNotEmpty;
     _players.clear();
     for (final score in game.players) {
       _players.add(_PlayerEntry.fromScore(score));
@@ -71,7 +74,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
   void _addPlayer() {
     setState(() {
-      _players.add(_PlayerEntry()..entryMethod = 'visual');
+      _players.add(_PlayerEntry()..entryMethod = 'basic');
     });
   }
 
@@ -131,6 +134,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
         entry.specialEventsCountController.text = specialEventsCount.toString();
         entry.specialEventsController.text = specialEventsPoints.toString();
         entry.journeyPointsController.text = journey.toString();
+        _recalculateWinners();
       });
     }
   }
@@ -140,6 +144,51 @@ class _NewGameScreenState extends State<NewGameScreen> {
       _players.remove(entry);
       entry.dispose();
       _winnerIds.remove(entry.playerId);
+      _recalculateWinners();
+    });
+  }
+
+  List<PlayerScore> _buildPlayerScores({required bool autoConvertResources}) {
+    final scores = <PlayerScore>[];
+    for (final entry in _players) {
+      int otherPlayersEventCount = 0;
+      for (final otherEntry in _players) {
+        if (otherEntry.rowId != entry.rowId) {
+          final basicEvents =
+              int.tryParse(otherEntry.basicEventsController.text) ?? 0;
+          final specialEventsCount =
+              int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
+          otherPlayersEventCount += basicEvents + specialEventsCount;
+        }
+      }
+
+      scores.add(
+        entry.buildScore(
+          autoConvertResources: autoConvertResources,
+          isWinner: false,
+          otherPlayersEventCount: otherPlayersEventCount,
+        ),
+      );
+    }
+    return scores;
+  }
+
+  void _recalculateWinners() {
+    if (_winnersOverridden || _players.isEmpty) {
+      return;
+    }
+
+    final settings = context.read<SettingsProvider>();
+    final scores = _buildPlayerScores(
+      autoConvertResources: settings.autoConvertResources,
+    );
+    final top = ScoreCalculator.determineTopPlayers(scores);
+    _winnerIds = top.map((p) => p.playerId).toList();
+  }
+
+  void _onPlayerDataChanged() {
+    setState(() {
+      _recalculateWinners();
     });
   }
 
@@ -169,50 +218,37 @@ class _NewGameScreenState extends State<NewGameScreen> {
     return score.totalScore;
   }
 
-  Future<void> _calculateWinners() async {
+  Future<void> _changeWinners() async {
     if (_players.isEmpty) {
       return;
     }
 
     final settings = context.read<SettingsProvider>();
-    final scores = <PlayerScore>[];
     for (final entry in _players) {
       if (entry.nameController.text.trim().isEmpty) {
         _showSnack('Each player needs a name.');
         return;
       }
-      if (entry.isQuickEntry && entry.quickTotal == null) {
+      if (entry.entryMethod == 'quick' && entry.quickTotal == null) {
         _showSnack('Enter a total score for each quick entry player.');
         return;
       }
-      
-      // Calculate other players' event counts for Rugwort
-      int otherPlayersEventCount = 0;
-      for (final otherEntry in _players) {
-        if (otherEntry.rowId != entry.rowId) {
-          final basicEvents = int.tryParse(otherEntry.basicEventsController.text) ?? 0;
-          final specialEventsCount = int.tryParse(otherEntry.specialEventsCountController.text) ?? 0;
-          otherPlayersEventCount += basicEvents + specialEventsCount;
-        }
-      }
-      
-      scores.add(
-        entry.buildScore(
-          autoConvertResources: settings.autoConvertResources,
-          isWinner: false,
-          otherPlayersEventCount: otherPlayersEventCount,
-        ),
-      );
     }
 
+    final scores = _buildPlayerScores(
+      autoConvertResources: settings.autoConvertResources,
+    );
     final top = ScoreCalculator.determineTopPlayers(scores);
-    final preselected = top.map((p) => p.playerId).toSet();
+    final preselected = _winnerIds.isNotEmpty
+        ? _winnerIds.toSet()
+        : top.map((p) => p.playerId).toSet();
     final selected = await _showWinnerDialog(scores, preselected);
     if (!mounted || selected == null) {
       return;
     }
     setState(() {
       _winnerIds = selected;
+      _winnersOverridden = true;
     });
   }
 
@@ -227,7 +263,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Select Winner(s)'),
+              title: const Text('Change Winner(s)'),
               content: SingleChildScrollView(
                 child: Column(
                   children: scores.map((score) {
@@ -292,11 +328,8 @@ class _NewGameScreenState extends State<NewGameScreen> {
     final gameProvider = context.read<GameProvider>();
     final playerProvider = context.read<PlayerProvider>();
 
-    if (_winnerIds.isEmpty) {
-      final proceed = await _confirmNoWinners();
-      if (!proceed) {
-        return;
-      }
+    if (!_winnersOverridden) {
+      _recalculateWinners();
     }
 
     final idMap = <String, String>{};
@@ -416,31 +449,6 @@ class _NewGameScreenState extends State<NewGameScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
-  }
-
-  Future<bool> _confirmNoWinners() async {
-    return await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('No Winner Selected'),
-              content: const Text(
-                'You have not selected a winner. Do you want to save anyway?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        ) ??
-        false;
   }
 
   Future<void> _selectDate() async {
@@ -573,6 +581,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
               onEntryMethodChanged: (value) {
                 setState(() {
                   entry.entryMethod = value;
+                  _recalculateWinners();
                 });
               },
               selectedCardCounts: entry.selectedCardCounts,
@@ -608,7 +617,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
               playerOrderController: entry.playerOrderController,
               startingCardsController: entry.startingCardsController,
               onRemove: () => _removePlayer(entry),
-              onChanged: () => setState(() {}),
+              onChanged: _onPlayerDataChanged,
               calculatedTotal:
                   _calculateTotal(entry, settings.autoConvertResources),
             ),
@@ -627,19 +636,31 @@ class _NewGameScreenState extends State<NewGameScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: _calculateWinners,
-            child: const Text('Select Winner(s)'),
+          const Text(
+            'Winner(s)',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          if (_winnerIds.isNotEmpty) ...[
-            const SizedBox(height: 8),
+          const SizedBox(height: 8),
+          if (_winnerIds.isNotEmpty)
             Wrap(
               spacing: 6,
+              runSpacing: 4,
               children: _winnerNames()
                   .map((name) => Chip(label: Text(name)))
                   .toList(),
+            )
+          else
+            Text(
+              'Enter scores to calculate winner(s)',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
             ),
-          ],
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: _changeWinners,
+            child: const Text('Change Winner(s)'),
+          ),
           const SizedBox(height: 12),
           FilledButton(
             onPressed: _saveGame,
@@ -692,7 +713,7 @@ class _PlayerEntry {
       TextEditingController();
 
   bool isQuickEntry = false;
-  String entryMethod = 'visual'; // 'visual', 'basic', or 'quick'
+  String entryMethod = 'basic'; // 'visual', 'basic', or 'quick'
   
   // Card selection data
   Map<String, int>? selectedCardCounts;

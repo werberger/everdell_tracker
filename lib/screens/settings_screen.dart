@@ -10,8 +10,21 @@ import '../providers/player_provider.dart';
 import '../providers/settings_provider.dart';
 import 'app_gate_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OnlineSessionProvider>().refreshActiveGroup();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,34 +47,39 @@ class SettingsScreen extends StatelessWidget {
                     : 'No scorebook selected',
               ),
             ),
-            if (session.activeGroup != null &&
-                session.activeGroup!.inviteCode.isNotEmpty)
+            if (session.activeGroup != null)
               ListTile(
                 leading: const Icon(Icons.key_outlined),
                 title: const Text('Invite code'),
                 subtitle: Text(
-                  session.activeGroup!.inviteCode,
+                  session.activeGroup!.inviteCode.isNotEmpty
+                      ? session.activeGroup!.inviteCode
+                      : 'Loading…',
                   style: const TextStyle(
                     fontFamily: 'monospace',
                     fontSize: 18,
                     letterSpacing: 2,
                   ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.copy_outlined),
-                  tooltip: 'Copy invite code',
-                  onPressed: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: session.activeGroup!.inviteCode),
-                    );
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Invite code copied to clipboard'),
-                      ),
-                    );
-                  },
-                ),
+                trailing: session.activeGroup!.inviteCode.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.copy_outlined),
+                        tooltip: 'Copy invite code',
+                        onPressed: () async {
+                          await Clipboard.setData(
+                            ClipboardData(
+                              text: session.activeGroup!.inviteCode,
+                            ),
+                          );
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Invite code copied to clipboard'),
+                            ),
+                          );
+                        },
+                      )
+                    : null,
               ),
             ListTile(
               leading: const Icon(Icons.groups_outlined),

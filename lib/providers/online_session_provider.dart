@@ -29,22 +29,50 @@ class OnlineSessionProvider extends ChangeNotifier {
       return;
     }
 
-    await loadGroups();
-    for (final group in _groups) {
-      if (group.id == saved.id) {
-        _activeGroup = group;
-        break;
-      }
-    }
-    if (_activeGroup == null && saved.id != null && saved.name != null) {
-      _activeGroup = EverdellGroup(
-        id: saved.id!,
-        name: saved.name!,
-        inviteCode: '',
-        memberCount: 0,
+    try {
+      // Fetch detail so invite_code and member_count are always current.
+      _activeGroup = await _api.getGroup(saved.id!);
+      await EverdellTokenStorage.saveActiveGroup(
+        groupId: _activeGroup!.id,
+        groupName: _activeGroup!.name,
       );
+    } on EverdellApiException {
+      await loadGroups();
+      for (final group in _groups) {
+        if (group.id == saved.id) {
+          _activeGroup = group;
+          break;
+        }
+      }
+      if (_activeGroup == null && saved.id != null && saved.name != null) {
+        _activeGroup = EverdellGroup(
+          id: saved.id!,
+          name: saved.name!,
+          inviteCode: '',
+          memberCount: 0,
+        );
+      }
+    } catch (_) {
+      _activeGroup = null;
     }
     notifyListeners();
+  }
+
+  /// Re-fetch the active group from the API (e.g. to populate invite_code).
+  Future<void> refreshActiveGroup() async {
+    if (_activeGroup == null) return;
+    try {
+      final fresh = await _api.getGroup(_activeGroup!.id);
+      _activeGroup = fresh;
+      final index = _groups.indexWhere((g) => g.id == fresh.id);
+      if (index >= 0) {
+        _groups[index] = fresh;
+      }
+      notifyListeners();
+    } on EverdellApiException catch (e) {
+      _errorMessage = e.message;
+      notifyListeners();
+    }
   }
 
   Future<void> loadGroups() async {

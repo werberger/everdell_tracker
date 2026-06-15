@@ -146,6 +146,15 @@ class EverdellApiService {
     return EverdellProfile.fromJson(body as Map<String, dynamic>);
   }
 
+  Future<EverdellGroup> getGroup(String groupId) async {
+    final response = await _client.get(
+      Uri.parse('$_root/groups/$groupId/'),
+      headers: await _headers(),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellGroup.fromJson(body as Map<String, dynamic>);
+  }
+
   Future<List<EverdellGroup>> listGroups() async {
     final response = await _client.get(
       Uri.parse('$_root/groups/'),

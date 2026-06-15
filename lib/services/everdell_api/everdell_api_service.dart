@@ -94,6 +94,37 @@ class EverdellApiService {
     }
   }
 
+  Future<void> register({
+    required String username,
+    required String email,
+    required String password,
+    String? displayName,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$_root/register/'),
+      headers: await _headers(jsonBody: true),
+      body: json.encode({
+        'username': username.trim(),
+        'email': email.trim(),
+        'password': password,
+        if (displayName != null && displayName.trim().isNotEmpty)
+          'display_name': displayName.trim(),
+      }),
+    );
+    final body = await _decodeResponse(response);
+    // Registration auto-logs-in: persist tokens on native; web uses cookies.
+    if (!kIsWeb && body is Map<String, dynamic>) {
+      final access = body['access'] as String?;
+      final refresh = body['refresh'] as String?;
+      if (access != null) {
+        await EverdellTokenStorage.saveTokens(
+          access: access,
+          refresh: refresh,
+        );
+      }
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _client.post(

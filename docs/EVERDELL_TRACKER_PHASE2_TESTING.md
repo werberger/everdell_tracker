@@ -101,6 +101,31 @@ Tests for `has_budget_access` and `has_everdell_access` on `CustomUser` (set via
 
 ---
 
+## Self-service registration
+
+Tests for `POST /api/everdell/register/` and the Flutter `RegistrationScreen`:
+
+| # | Test | Expected | Status |
+|---|------|----------|--------|
+| 42 | `/everdell/` login → "Create an account" | Registration screen opens | open after deploy |
+| 43 | Register with new username + email + password | Account created, auto-logged-in, lands on group picker | open |
+| 44 | New account has no budget access | Budget login (cookie) returns 403 for this user | open (covered by backend test) |
+| 45 | Register with existing username | Inline error "Username already taken" | open |
+| 46 | Register with existing email | Inline error "account with this email already exists" | open |
+| 47 | Register with weak/short password | Inline password validation error | open |
+| 48 | Register 6 times quickly from one IP | 6th attempt blocked: "Too many sign-up attempts" (429) | open |
+| 49 | New user enters invalid invite code 31× in a day | 31st blocked (429, join throttle 30/day) | open |
+| 50 | New user joins a group with valid code | Scorebook loads | open |
+
+Backend unit tests: `everdell/tests_registration.py` (7 tests — success, duplicate username/email, weak password, budget refusal, disabled gate, rate-limit). Run:
+
+```powershell
+cd c:\Users\kiero\Code\budgit
+python manage.py test everdell.tests_registration --settings=budgit.settings_dev
+```
+
+---
+
 ## Known limitations (not bugs — Phase 2c / 3)
 
 - **No offline queue:** aeroplane / no signal → cannot create games (or may show loader error).

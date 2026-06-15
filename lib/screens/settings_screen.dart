@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../models/app_settings.dart';
@@ -33,6 +34,35 @@ class SettingsScreen extends StatelessWidget {
                     : 'No scorebook selected',
               ),
             ),
+            if (session.activeGroup != null &&
+                session.activeGroup!.inviteCode.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.key_outlined),
+                title: const Text('Invite code'),
+                subtitle: Text(
+                  session.activeGroup!.inviteCode,
+                  style: const TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 18,
+                    letterSpacing: 2,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.copy_outlined),
+                  tooltip: 'Copy invite code',
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: session.activeGroup!.inviteCode),
+                    );
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Invite code copied to clipboard'),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ListTile(
               leading: const Icon(Icons.groups_outlined),
               title: const Text('Change scorebook'),

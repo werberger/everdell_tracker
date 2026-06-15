@@ -39,6 +39,15 @@
 
 ---
 
+## Self-service registration (this repo)
+
+- **Screen:** `lib/screens/registration_screen.dart`, linked from `LoginScreen` ("New here? Create an account").
+- **Provider:** `AuthProvider.register()` → `EverdellApiService.register()` → `POST /api/everdell/register/`.
+- **Behaviour:** creates an Everdell-only account (no budget access), auto-logs-in, proceeds to group picker. User then joins a household scorebook with an invite code.
+- **No email verification.** Anti-abuse handled server-side: 5 registrations/day per IP, 30 invite-code attempts/day per user. See budgit copy for full reasoning.
+
+---
+
 ## Flutter implementation (this repo)
 
 - **URL:** `https://www.budgit.lol/everdell/` (path on Budgit Django service, built by `scripts/build.sh`).

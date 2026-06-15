@@ -11,6 +11,8 @@
 | **Player (roster row)** | A person on the score sheet in one group — globally unique **`id` (UUID)** |
 | **Linked player** | Roster row with optional `linked_user_id` → Budgit account |
 
+**Auto roster on membership (June 2026):** Every group member automatically gets a linked roster row when they create or join a group (`everdell/services.py` → `ensure_roster_player_for_user`, called from `add_member`). Migration `everdell.0006_backfill_roster_players_for_members` backfills existing members who joined before this behaviour existed. **Reasoning:** members with Everdell access should appear in the player database without a manual “add yourself” step; game autocomplete and UUID payloads stay consistent.
+
 - **Identity is the player UUID**, not the display name.
 - The same human can have **multiple player rows** (different groups, different spellings, different UUIDs).
 - **At most one linked player per user per group** (you cannot link two roster rows to yourself in the same group).
@@ -67,6 +69,8 @@ Only the **linked account** can change `display_name_source` / `display_avatar_s
 | `created_at`, `updated_at` | (server) | Audit |
 
 Duplicate **names in the same group are allowed** (different UUIDs).
+
+**Disambiguation in UI (Flutter, June 2026):** When multiple roster rows share the same resolved `display_name`, autocomplete shows `Name · AB12` (last four characters of the player UUID). Settings allows each linked member to set a per-group **nickname** via `PATCH .../players/<id>/` with `display_name_source: "player"`.
 
 ## Account profile (`/api/everdell/me/`)
 

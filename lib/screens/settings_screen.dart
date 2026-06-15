@@ -18,12 +18,66 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final _nicknameController = TextEditingController();
+  bool _nicknameDirty = false;
+  bool _savingNickname = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<OnlineSessionProvider>().refreshActiveGroup();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final session = context.read<OnlineSessionProvider>();
+      await session.refreshActiveGroup();
+      final groupId = session.activeGroup?.id;
+      if (groupId != null && mounted) {
+        await context.read<PlayerProvider>().loadRoster(groupId);
+        _syncNicknameFromRoster();
+      }
     });
+  }
+
+  void _syncNicknameFromRoster() {
+    final mine = context.read<PlayerProvider>().myPlayer;
+    if (mine != null && !_nicknameDirty) {
+      _nicknameController.text = mine.nickname.isNotEmpty
+          ? mine.nickname
+          : mine.name;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveNickname() async {
+    final session = context.read<OnlineSessionProvider>();
+    final groupId = session.activeGroup?.id;
+    if (groupId == null) return;
+
+    setState(() => _savingNickname = true);
+    try {
+      final mine = context.read<PlayerProvider>().myPlayer;
+      final nickname = _nicknameController.text.trim();
+      await context.read<PlayerProvider>().updateMyNickname(
+            groupId,
+            nickname.isNotEmpty ? nickname : (mine?.name ?? nickname),
+            displayNameSource: 'player',
+          );
+      if (!mounted) return;
+      setState(() => _nicknameDirty = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nickname updated')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save nickname')),
+      );
+    } finally {
+      if (mounted) setState(() => _savingNickname = false);
+    }
   }
 
   @override
@@ -31,6 +85,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final settings = context.watch<SettingsProvider>();
     final auth = context.watch<AuthProvider>();
     final session = context.watch<OnlineSessionProvider>();
+    final players = context.watch<PlayerProvider>();
+    final myPlayer = players.myPlayer;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -81,6 +138,47 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )
                     : null,
               ),
+            if (session.activeGroup != null && myPlayer != null) ...[
+              ListTile(
+                title: const Text('Your name in this scorebook'),
+                subtitle: Text(
+                  'ID ${myPlayer.shortId} · shown when names repeat',
+                  style: theme.textTheme.bodySmall,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TextField(
+                  controller: _nicknameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nickname in ${session.activeGroup!.name}',
+                    hintText: myPlayer.name,
+                    border: const OutlineInputBorder(),
+                    helperText:
+                        'Use a nickname to tell apart players with the same name',
+                  ),
+                  onChanged: (_) => setState(() => _nicknameDirty = true),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.tonal(
+                    onPressed: _savingNickname || !_nicknameDirty
+                        ? null
+                        : _saveNickname,
+                    child: _savingNickname
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text('Save nickname'),
+                  ),
+                ),
+              ),
+            ],
             ListTile(
               leading: const Icon(Icons.groups_outlined),
               title: const Text('Change scorebook'),

@@ -492,7 +492,8 @@ class _NewGameScreenState extends State<NewGameScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
-    final playerNames = context.watch<PlayerProvider>().playerNames;
+    final playerSuggestions =
+        context.watch<PlayerProvider>().pickerSuggestions;
 
     return Scaffold(
       appBar: AppBar(
@@ -551,12 +552,14 @@ class _NewGameScreenState extends State<NewGameScreen> {
             PlayerInputCard(
               index: _players.indexOf(entry),
               nameController: entry.nameController,
-              playerSuggestions: playerNames,
+              playerSuggestions: playerSuggestions,
               onSuggestionSelected: (value) {
-                final player = context.read<PlayerProvider>().findByDisplayName(value);
+                final player =
+                    context.read<PlayerProvider>().findByPickerLabel(value);
                 if (player != null) {
                   entry.playerId = player.id;
                   entry.displayName = player.displayName;
+                  entry.nameController.text = player.displayName;
                 }
               },
               isQuickEntry: entry.entryMethod == 'quick',

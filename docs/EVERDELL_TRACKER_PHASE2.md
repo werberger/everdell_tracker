@@ -134,16 +134,29 @@ Create a service responsible for all Budgit API communication:
 
 **Key files:** `lib/providers/game_provider.dart`, `lib/models/everdell_game_record.dart`, `lib/screens/new_game_screen.dart`, `lib/screens/history_screen.dart`.
 
-### Roster (Phase 2b)
+### Roster (Phase 2b + June 2026 polish)
 
 | Decision | Reasoning |
 |----------|-----------|
 | Autocomplete shows `display_name` from API | Per `EVERDELL_PLAYER_ACCOUNTS.md`; linked players may differ from raw `name`. |
+| When names collide, show `Name · AB12` in autocomplete | Last 4 chars of player UUID — subtle disambiguator; full UUID only in Settings as “ID AB12”. |
 | `ensurePlayer` on save creates `POST .../players/` if name not in roster | Keeps game payloads aligned with server UUIDs without a separate “add player” screen. |
+| Auto-linked roster row on group create/join (server) | Budgit `add_member()` calls `ensure_roster_player_for_user()`; migration `0006` backfills existing members. |
+| Settings nickname + `patchPlayer()` | Per-group nickname via `PATCH .../players/<id>/` with `display_name_source: player`; avoids changing account display name. |
 | `display_avatar_url` not shown yet | Deferred to Phase 3 polish; names only in `PlayerInputCard` for now. |
 | `_PlayerEntry.rowId` vs `playerId` | UI winner selection uses stable row id during edit; `playerId` becomes roster UUID before save. |
 
-**Key files:** `lib/providers/player_provider.dart`, `lib/models/everdell_player.dart`, `lib/widgets/player_input_card.dart`.
+**Key files:** `lib/providers/player_provider.dart`, `lib/models/everdell_player.dart`, `lib/widgets/player_input_card.dart`, `lib/screens/settings_screen.dart`.
+
+### Group picker (June 2026)
+
+| Decision | Reasoning |
+|----------|-----------|
+| Scorebook list is the primary UI | Most sessions start by picking an existing household scorebook. |
+| Invite code + Join always visible | Joining via invite is the common path for new members. |
+| “Create a new scorebook” collapsed at bottom | Creating a group is rare; reduces clutter on the landing screen. |
+
+**Key file:** `lib/screens/group_picker_screen.dart`.
 
 ### Local storage
 
@@ -162,10 +175,12 @@ Create a service responsible for all Budgit API communication:
 
 ### Not implemented (Phase 2 scope gaps → Phase 3)
 
-- `patchMe()`, `patchPlayer()`, `listMyPlayers()`
+- `patchMe()`, `listMyPlayers()`
 - Roster avatars in UI
 - Server-side last-active-group preference
 - `GET /api/everdell/games/mine/`
+
+(`patchPlayer()` implemented June 2026 for nickname edits in Settings.)
 
 ## Testing
 

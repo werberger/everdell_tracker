@@ -212,6 +212,28 @@ class EverdellApiService {
     return EverdellPlayer.fromJson(body as Map<String, dynamic>);
   }
 
+  Future<EverdellPlayer> patchPlayer(
+    String groupId,
+    String playerId, {
+    String? nickname,
+    String? displayNameSource,
+  }) async {
+    final payload = <String, dynamic>{};
+    if (nickname != null) {
+      payload['nickname'] = nickname.trim();
+    }
+    if (displayNameSource != null) {
+      payload['display_name_source'] = displayNameSource;
+    }
+    final response = await _client.patch(
+      Uri.parse('$_root/groups/$groupId/players/$playerId/'),
+      headers: await _headers(jsonBody: true),
+      body: json.encode(payload),
+    );
+    final body = await _decodeResponse(response);
+    return EverdellPlayer.fromJson(body as Map<String, dynamic>);
+  }
+
   Future<List<String>> listGameIds(String groupId) async {
     final response = await _client.get(
       Uri.parse('$_root/groups/$groupId/games/'),
